@@ -1,0 +1,356 @@
+openapi: 3.0.1
+info:
+  title: GlobalTask Onboarding - Users API (Result Pattern)
+  description: >
+    Definición OpenAPI para el proyecto de onboarding, detallando los endpoints de la entidad User y
+    utilizando un Result Pattern para las respuestas.
+  version: 1.0.0
+
+servers:
+  - url: https://localhost:5000/
+    description: Servidor local de desarrollo
+
+paths:
+  /api/users:
+    post:
+      summary: Crea un nuevo usuario
+      description: Crea un usuario y retorna el Id asignado en el campo "value".
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: El usuario fue creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfInteger'
+        '400':
+          description: Error de validación en los datos de entrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfInteger'
+
+    get:
+      summary: Obtiene un listado paginado de usuarios
+      description: Retorna la lista de usuarios paginada en el campo "value".
+      operationId: getUsers
+      parameters:
+        - name: page
+          in: query
+          description: Número de página.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Cantidad de registros por página.
+          required: false
+          schema:
+            type: integer
+            default: 25
+        - name: sortBy
+          in: query
+          description: Campo por el cual se ordenará la búsqueda.
+          required: false
+          schema:
+            type: string
+            default: "name"
+      responses:
+        '200':
+          description: Lista de usuarios paginada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfPaginatedUserDto'
+        '400':
+          description: Parámetros de paginación inválidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfPaginatedUserDto'
+
+  /api/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identificador del usuario
+        schema:
+          type: integer
+          example: 1
+
+    get:
+      summary: Obtiene la información de un usuario por Id
+      description: Retorna la información del usuario en el campo "value".
+      operationId: getUserById
+      responses:
+        '200':
+          description: Datos del usuario.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfUserDto'
+        '404':
+          description: No se encontró un usuario con ese Id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfUserDto'
+
+    patch:
+      summary: Actualiza los datos de un usuario
+      description: Retorna un objeto Result con "isSuccess=true" y sin valor en caso de éxito (campo "value" = null).
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Usuario actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfNull'
+        '400':
+          description: Error de validación en los datos de entrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfNull'
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfNull'
+
+    delete:
+      summary: Elimina un usuario por Id
+      description: Retorna un objeto Result con "isSuccess=true" y sin valor en caso de éxito (campo "value" = null).
+      operationId: deleteUser
+      responses:
+        '200':
+          description: Usuario eliminado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfNull'
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfNull'
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    # Schemas para Request
+    # ------------------------------------------------------------------------
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - phoneNumber
+        - birthday
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: "Juan Pérez"
+        email:
+          type: string
+          format: email
+          example: "juan.perez@dominio.com"
+        phoneNumber:
+          type: string
+          description: "Debe contener sólo dígitos. Longitud mínima: 7, máxima: 15"
+          pattern: "^[0-9]{7,15}$"
+          example: "1234567890"
+        birthday:
+          type: string
+          format: date
+          description: "Usuario debe ser mayor de 18 años."
+          example: "1990-05-10"
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: "Juan Pérez"
+        email:
+          type: string
+          format: email
+          example: "juan.perez@dominio.com"
+        phoneNumber:
+          type: string
+          pattern: "^[0-9]{7,15}$"
+          example: "1234567890"
+        birthday:
+          type: string
+          format: date
+          description: "Usuario debe ser mayor de 18 años."
+          example: "1990-05-10"
+
+    # ------------------------------------------------------------------------
+    # Schemas para Respuesta (DTOs + Result Pattern)
+    # ------------------------------------------------------------------------
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Juan Pérez"
+        email:
+          type: string
+          format: email
+          example: "juan.perez@dominio.com"
+        phoneNumber:
+          type: string
+          example: "1234567890"
+        birthday:
+          type: string
+          format: date
+          example: "1990-05-10"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        modifiedAt:
+          type: string
+          format: date-time
+          example: "2024-02-01T12:00:00Z"
+
+    PaginatedUserDto:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          example: 100
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 25
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDto'
+
+    # ------------------------------------------------------------------------
+    # Result Pattern Generics
+    # ------------------------------------------------------------------------
+    # El objeto Result base:
+    # {
+    #   "value": T | null,
+    #   "isSuccess": boolean,
+    #   "error": Error | null,
+    #   "statusCode": integer
+    # }
+
+    # 1) Result que retorna un 'UserDto' en campo "value"
+    ResultOfUserDto:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/UserDto'
+        isSuccess:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+          format: int32
+          example: 200
+        error:
+          $ref: '#/components/schemas/Error'
+
+    # 2) Result que retorna la lista paginada de usuarios en "value"
+    ResultOfPaginatedUserDto:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/PaginatedUserDto'
+        isSuccess:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+          format: int32
+          example: 200
+        error:
+          $ref: '#/components/schemas/Error'
+
+    # 3) Result que retorna un integer (por ejemplo, un Id) en "value"
+    ResultOfInteger:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: "Ejemplo: Id del usuario creado."
+          example: 1
+        isSuccess:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+          format: int32
+          example: 201
+        error:
+          $ref: '#/components/schemas/Error'
+
+    # 4) Result que no retorna nada en "value"
+    ResultOfNull:
+      type: object
+      properties:
+        value:
+          type: "integer"
+          nullable: true
+          example: null
+        isSuccess:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+          format: int32
+          example: 200
+        error:
+          $ref: '#/components/schemas/Error'
+
+    # ------------------------------------------------------------------------
+    # Error Interno utilizado por el Result Pattern
+    # ------------------------------------------------------------------------
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "User.NotFound"
+        description:
+          type: string
+          example: "No se encontró el usuario con el Id especificado."
+        type:
+          type: string
+          description: "Puede ser: Failure, Validation, NotFound, Conflict o Problem."
+          enum:
+            - Failure
+            - Validation
+            - NotFound
+            - Conflict
+            - Problem
