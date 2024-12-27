@@ -8,9 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Users.WebApi/Users.WebApi.csproj", "Users.WebApi/"]
-COPY ["Users.Application/Users.Application.csproj", "Users.Application/"]
 COPY ["Users.Domain/Users.Domain.csproj", "Users.Domain/"]
 COPY ["Users.Infrastructure/Users.Infrastructure.csproj", "Users.Infrastructure/"]
+COPY ["Users.Application/Users.Application.csproj", "Users.Application/"]
 RUN dotnet restore "Users.WebApi/Users.WebApi.csproj"
 COPY . .
 WORKDIR "/src/Users.WebApi"
