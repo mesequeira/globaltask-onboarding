@@ -7,11 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Users\Events\" />
-      <Folder Include="Users\Profiles\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Users.Domain\Users.Domain.csproj" />
     </ItemGroup>
 

@@ -2,9 +2,8 @@
 
 namespace Users.Domain.Users.Models;
 
-public class User
+public class User : BaseModel
 {
-    public Guid Id { get; protected set; }
     public string Name { get; protected set; }
     public string Email { get; protected set; }
     public string PhoneNumber { get; protected set; }

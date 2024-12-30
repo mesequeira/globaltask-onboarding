@@ -12,15 +12,14 @@
         <PackageReference Include="MediatR" Version="12.4.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Controllers\" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Users.Application\Users.Application.csproj" />
       <ProjectReference Include="..\Users.Infrastructure\Users.Infrastructure.csproj" />
+      <ProjectReference Include="..\Users.Persistence\Users.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>
