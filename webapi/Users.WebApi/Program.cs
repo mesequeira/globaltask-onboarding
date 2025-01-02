@@ -1,4 +1,4 @@
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Users.Application.Users.Commands.CreateUser;
 using Users.Domain.Interfaces;
 using Users.Infrastructure.Persistence;
@@ -6,13 +6,18 @@ using Users.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<DbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    // o UseInMemoryDatabase("UsersDb") para pruebas
+});
 
 // // Registrar MediatR
-// builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly));
-//
-// // Registrar el Repositorio y UnitOfWork
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
-// builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly));
+
+// Registrar el Repositorio y UnitOfWork
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 
@@ -50,11 +55,7 @@ app.Run();
 
 
 // 1. Agregar DbContext
-// builder.Services.AddDbContext<DbContext>(options =>
-// {
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//     // o UseInMemoryDatabase("UsersDb") para pruebas
-// });
+
 
 // 2. Registrar MediatR
 // builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly));
