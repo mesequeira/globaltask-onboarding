@@ -1,6 +1,7 @@
 ﻿using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Users.Domain.Models;
 using Users.Domain.Users.Models;
 
 namespace Users.Persistence;

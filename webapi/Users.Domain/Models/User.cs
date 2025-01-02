@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Users.Domain.Users.Models;
 
-namespace Users.Domain.Users.Models;
+namespace Users.Domain.Models;
 
 public class User : BaseModel
 {
@@ -13,13 +13,13 @@ public class User : BaseModel
     
     protected User(){}
 
-    public User(Guid id, string name, string email, string phoneNumber)
+    public User(Guid id, string name, string email, string phoneNumber, DateTime birthDate)
     {
         this.Id = id;
         this.Name = name;
         this.Email = email;
         this.PhoneNumber = phoneNumber;
-        this.BirthDate = DateTime.Now;
+        this.BirthDate = birthDate;
     }
     
     

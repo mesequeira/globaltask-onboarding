@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Users.Domain.Interfaces;
-using Users.Domain.Users.Models;
+using Users.Domain.Models;
 
-namespace Users.Persistence.Repositories;
+namespace Users.Persistence;
 
-internal sealed  class UserRepository : IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly DbContext _dbContext;
 
@@ -23,17 +23,17 @@ internal sealed  class UserRepository : IUserRepository
         return _dbContext.Set<User>();
     }
 
-    public void Crear(User usuario)
+    public void Create(User usuario)
     {
         _dbContext.Set<User>().Add(usuario);
     }
 
-    public void Actualizar(User usuario)
+    public void Update(User usuario)
     {
         _dbContext.Set<User>().Update(usuario);
     }
 
-    public void Eliminar(Guid id)
+    public void Delete(Guid id)
     {
         var user = _dbContext.Set<User>().FirstOrDefault(x => x.Id == id);
         if (user != null) _dbContext.Set<User>().Remove(user);

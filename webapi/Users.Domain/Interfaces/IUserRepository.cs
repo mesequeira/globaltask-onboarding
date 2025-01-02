@@ -1,4 +1,5 @@
-﻿using Users.Domain.Users.Models;
+﻿using Users.Domain.Models;
+using Users.Domain.Users.Models;
 
 namespace Users.Domain.Interfaces;
 
@@ -6,7 +7,7 @@ public interface IUserRepository
 {
     Task<User?> GetById(Guid id);
     IEnumerable<User> Get();
-    void Crear(User usuario);
-    void Actualizar(User usuario); // usando su ID
-    void Eliminar(Guid id);
+    void Create(User usuario);
+    void Update(User usuario); // usando su ID
+    void Delete(Guid id);
 }
