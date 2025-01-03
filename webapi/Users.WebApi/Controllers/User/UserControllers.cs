@@ -63,7 +63,7 @@ public class UsersController : ControllerBase
     )]
     [SwaggerResponse(200, "Datos del usuario.")]
     [SwaggerResponse(404, "No se encontró un usuario con ese Id.")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(int id)
     {
         var query = new GetUserByIdQuery(id);
         var result = await _mediator.Send(query);
@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
     [SwaggerResponse(200, "Usuario actualizado correctamente.")]
     [SwaggerResponse(400, "Error de validación en los datos de entrada.")]
     [SwaggerResponse(404, "El usuario no existe.")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserCommand command)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserCommand command)
     {
         if (id != command.Id)
             return BadRequest("El ID del usuario no coincide con la ruta.");
@@ -103,7 +103,7 @@ public class UsersController : ControllerBase
     )]
     [SwaggerResponse(200, "Usuario eliminado correctamente.")]
     [SwaggerResponse(404, "El usuario no existe.")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(int id)
     {
         var command = new DeleteUserCommand(id);
         var success = await _mediator.Send(command);

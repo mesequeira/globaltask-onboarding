@@ -10,8 +10,8 @@
       - sqlpreview
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=${DB_HOST};Database=${DB_DATABASE};User=${DB_USER};Password=${DB_PASSWORD};
-  
+      - ConnectionStrings__DefaultConnection=Server=${BD_HOST_MSSQL},${DB_PORT};Database=${DB_DATABASE};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+
   sqlpreview:
     image: mcr.microsoft.com/mssql/server:latest
     container_name: sqlpreview

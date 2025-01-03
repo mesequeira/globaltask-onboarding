@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Users.Application.Users.Commands.DeleteUser;
 
-public record DeleteUserCommand(Guid Id) : IRequest<bool>;
+public record DeleteUserCommand(int Id) : IRequest<bool>;

@@ -6,7 +6,9 @@ using Users.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DbContext>(options =>
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     // o UseInMemoryDatabase("UsersDb") para pruebas
@@ -21,7 +23,6 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 
-
 // Agregar servicios de Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,15 +35,22 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configurar el middleware de Swagger
-// if (app.Environment.IsDevelopment())
-// {
+if (app.Environment.IsDevelopment())
+{
+    // using (var serviceScope = app.Services.CreateScope())
+    // {
+    //     var dbContext = serviceScope.ServiceProvider.GetRequiredService<DbContext>();
+    //     // Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+    //     dbContext.Database.Migrate();
+    // }
+        
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
         c.RoutePrefix = string.Empty; // Esto hace que Swagger UI esté disponible en la raíz
     });
-// }
+}
 
 // Configurar el middleware para manejar las solicitudes
 // app.UseHttpsRedirection();

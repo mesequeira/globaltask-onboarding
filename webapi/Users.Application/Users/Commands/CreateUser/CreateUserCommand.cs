@@ -5,9 +5,9 @@ using MediatR;
 namespace Users.Application.Users.Commands.CreateUser;
 
 public record CreateUserCommand(
-    Guid Id,
+    int Id,
     string Name,
     string Email,
     string PhoneNumber,
     DateTime BirthDate
-) : IRequest<Guid>;
+) : IRequest<int>;

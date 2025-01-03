@@ -18,6 +18,6 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
     public Task<IEnumerable<User>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var users = _userRepository.Get();
-        return Task.FromResult(users);
+        return users;
     }
 }

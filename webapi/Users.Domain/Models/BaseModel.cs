@@ -2,7 +2,8 @@
 
 public class BaseModel
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
+    public Guid? Guid { get; set; }
     public DateTime ModifiedAt { get; set; }
     public DateTime CretaedAt { get; set; }
 }

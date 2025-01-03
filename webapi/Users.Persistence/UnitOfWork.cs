@@ -3,14 +3,15 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Users.Domain.Interfaces;
+using Users.Persistence;
 
 namespace Users.Infrastructure.Persistence;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContext _context;
+    private readonly AppDbContext _context;
 
-    public UnitOfWork(DbContext context)
+    public UnitOfWork(AppDbContext context)
     {
         _context = context;
     }

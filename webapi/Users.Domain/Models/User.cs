@@ -9,11 +9,11 @@ public class User : BaseModel
     public string PhoneNumber { get; protected set; }
     public DateTime BirthDate { get; protected set; }
     
-    protected User(Guid id) => Id = id;
+    protected User(int id) => Id = id;
     
     protected User(){}
 
-    public User(Guid id, string name, string email, string phoneNumber, DateTime birthDate)
+    public User(int id, string name, string email, string phoneNumber, DateTime birthDate)
     {
         this.Id = id;
         this.Name = name;

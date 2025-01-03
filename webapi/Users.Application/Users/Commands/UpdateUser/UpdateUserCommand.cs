@@ -5,7 +5,7 @@ using MediatR;
 namespace Users.Application.Users.Commands.UpdateUser;
 
 public record UpdateUserCommand(
-    Guid Id,
+    int Id,
     string Name,
     string Email,
     string PhoneNumber,

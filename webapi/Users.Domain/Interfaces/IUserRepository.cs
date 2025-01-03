@@ -5,9 +5,9 @@ namespace Users.Domain.Interfaces;
 
 public interface IUserRepository
 {
-    Task<User?> GetById(Guid id);
-    IEnumerable<User> Get();
-    void Create(User usuario);
-    void Update(User usuario); // usando su ID
-    void Delete(Guid id);
+    Task<User?> GetById(int id);
+    Task<IEnumerable<User>> Get();
+    Task Create(User usuario);
+    Task Update(User usuario); // usando su ID ? 
+    Task<bool> Delete(int id);
 }

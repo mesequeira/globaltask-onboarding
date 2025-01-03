@@ -23,7 +23,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, bool>
         if (existingUser == null)
             return false;
 
-        _userRepository.Delete(request.Id);
+        var deletion = _userRepository.Delete(request.Id);
         await _unitOfWork.SaveChangesAsync();
 
         return true;
