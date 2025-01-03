@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Filters;
 using Users.Application.Users.Commands.CreateUser;
 using Users.Domain.Interfaces;
 using Users.Infrastructure.Persistence;
@@ -30,7 +31,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
+    c.ExampleFilters(); // Register example filters
 });
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<CreateUserCommandExample>(); // Register the example provider
+
 
 var app = builder.Build();
 
@@ -58,20 +63,3 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
-
-
-
-
-// 1. Agregar DbContext
-
-
-// 2. Registrar MediatR
-// builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly));
-
-// 3. Registrar el Repositorio y UnitOfWork
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
-// builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
-// 4. Agregar controladores
-// builder.Services.AddControllers();

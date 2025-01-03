@@ -1,11 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
+using Users.Application.DTOs.Users;
 using Users.Application.Users.Commands.CreateUser;
 using Users.Application.Users.Commands.DeleteUser;
 using Users.Application.Users.Commands.UpdateUser;
 using Users.Application.Users.Queries.GetAllUsers;
 using Users.Application.Users.Queries.GetUserById;
+using Users.Domain.Abstractions;
 using Users.Domain.Models;
 
 
@@ -29,12 +32,25 @@ public class UsersController : ControllerBase
         Summary = "Crea un nuevo usuario",
         Description = "Crea un usuario y retorna el Id asignado en el campo 'value'."
     )]
-    [SwaggerResponse(201, "El usuario fue creado correctamente.", typeof(Guid))]
+    [SwaggerRequestExample(typeof(CreateUserCommand), typeof(CreateUserCommandExample))]
+    [SwaggerResponse(201, "El usuario fue creado correctamente.", typeof(Result<int>))]
     [SwaggerResponse(400, "Error de validación en los datos de entrada.")]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
     {
-        var createdUserId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetById), new { id = createdUserId }, createdUserId);
+        var result  = await _mediator.Send(command);
+        
+        if (!result.IsSuccess)
+        {
+            // Podrías devolver 400 (BadRequest), 409 (Conflict), etc., 
+            // dependiendo de la naturaleza del error.
+            return BadRequest(result.CreateResponseObject());
+        }
+        
+        return CreatedAtAction(
+            nameof(GetById), 
+            new { id = result.Value },
+            result.CreateResponseObject()
+        );
     }
 
     // GET: api/users
@@ -43,16 +59,18 @@ public class UsersController : ControllerBase
         Summary = "Obtiene un listado paginado de usuarios",
         Description = "Retorna la lista de usuarios paginada en el campo 'value'."
     )]
-    [SwaggerResponse(200, "Lista de usuarios paginada.", typeof(IEnumerable<Domain.Models.User>))]
+    [SwaggerResponse(200, "Lista de usuarios paginada.", typeof(Result<UsersPaginatedListDTO>))]
     [SwaggerResponse(400, "Parámetros de paginación inválidos.")]
     public async Task<IActionResult> GetUsers(
         [FromQuery] int page = 1,
         [FromQuery] int size = 25,
         [FromQuery] string sortBy = "name")
     {
-        var query = new GetAllUsersQuery();
+        var query = new GetAllUsersQuery(page, size, sortBy);
         var result = await _mediator.Send(query);
-        return Ok(result);
+        if (result.IsSuccess)
+           return Ok(result.CreateResponseObject());
+        return BadRequest(result.CreateResponseObject());
     }
 
     // GET: api/users/{id}

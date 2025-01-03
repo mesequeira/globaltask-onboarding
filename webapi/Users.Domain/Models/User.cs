@@ -15,11 +15,19 @@ public class User : BaseModel
 
     public User(int id, string name, string email, string phoneNumber, DateTime birthDate)
     {
-        this.Id = id;
-        this.Name = name;
-        this.Email = email;
-        this.PhoneNumber = phoneNumber;
-        this.BirthDate = birthDate;
+        Id = id;
+        Name = name;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        BirthDate = birthDate;
+    }
+    
+    public User(string name, string email, string phoneNumber, DateTime birthDate)
+    {
+        Name = name;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        BirthDate = birthDate;
     }
     
     
