@@ -10,6 +10,7 @@ using Users.Application.Users.Queries.GetAllUsers;
 using Users.Application.Users.Queries.GetUserById;
 using Users.Domain.Abstractions;
 using Users.Domain.Models;
+using Users.WebApi.Controllers.User.Examples;
 
 
 namespace Users.WebApi.Controllers.User;
@@ -59,7 +60,7 @@ public class UsersController : ControllerBase
         Summary = "Obtiene un listado paginado de usuarios",
         Description = "Retorna la lista de usuarios paginada en el campo 'value'."
     )]
-    [SwaggerResponse(200, "Lista de usuarios paginada.", typeof(Result<UsersPaginatedListDTO>))]
+    [SwaggerResponse(200, "Lista de usuarios paginada.", typeof(Result<PaginatedUsersDTO>))]
     [SwaggerResponse(400, "Parámetros de paginación inválidos.")]
     public async Task<IActionResult> GetUsers(
         [FromQuery] int page = 1,
@@ -86,10 +87,12 @@ public class UsersController : ControllerBase
         var query = new GetUserByIdQuery(id);
         var result = await _mediator.Send(query);
 
-        if (result == null)
-            return NotFound();
-
-        return Ok(result);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.CreateResponseObject()),
+            404 => NotFound(result.CreateResponseObject()),
+            _ => BadRequest(result.CreateResponseObject())
+        };
     }
 
     // PATCH: api/users/{id}
@@ -98,19 +101,30 @@ public class UsersController : ControllerBase
         Summary = "Actualiza los datos de un usuario",
         Description = "Retorna un objeto Result con 'isSuccess=true' y sin valor en caso de éxito (campo 'value' = null)."
     )]
-    [SwaggerResponse(200, "Usuario actualizado correctamente.")]
+    [SwaggerRequestExample(typeof(UpdateUserCommand), typeof(UpdateUserCommandExample))]
+    [SwaggerResponse(200, "Usuario actualizado correctamente.", typeof(Result<int>))]
     [SwaggerResponse(400, "Error de validación en los datos de entrada.")]
     [SwaggerResponse(404, "El usuario no existe.")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserCommand command)
     {
-        if (id != command.Id)
+        
+        // Asignar el ID de la URL al comando
+        var updatedCommand = command with { Id = id };
+        
+        // Validar que el ID de la URL coincide con el del comando
+        if (id != updatedCommand.Id)
             return BadRequest("El ID del usuario no coincide con la ruta.");
 
-        var success = await _mediator.Send(command);
-        if (!success)
-            return NotFound();
+        // Enviar el comando al mediador
+        var result = await _mediator.Send(updatedCommand);
 
-        return NoContent();
+        // Manejar el resultado según el código de estado
+        return result.StatusCode switch
+        {
+            204 => NoContent(), // No devuelve un cuerpo de respuesta
+            404 => NotFound(result.CreateResponseObject()), // Error de "no encontrado"
+            _ => BadRequest(result.CreateResponseObject()) // Error genérico
+        };
     }
 
     // DELETE: api/users/{id}
@@ -124,11 +138,13 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var command = new DeleteUserCommand(id);
-        var success = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        if (!success)
-            return NotFound();
-
-        return NoContent();
+        return result.StatusCode switch
+        {
+            204 => NoContent(), // No devuelve un cuerpo de respuesta
+            404 => NotFound(result.CreateResponseObject()), // Error de "no encontrado"
+            _ => BadRequest(result.CreateResponseObject()) // Error genérico
+        };
     }
 }

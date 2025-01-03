@@ -23,7 +23,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         // Validar Usuario
         if (false)
         {
-            return Result<int>.Failure(new int(), 400, new Error("0001", "User No se pudo crear el usuario"));
+            return Result<int>.Failure(400, new Error("0001", "User No se pudo crear el usuario"));
         }
         
         var user = new User(

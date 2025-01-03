@@ -4,15 +4,11 @@ namespace Users.Domain.Models;
 
 public class User : BaseModel
 {
-    public string Name { get; protected set; }
-    public string Email { get; protected set; }
-    public string PhoneNumber { get; protected set; }
-    public DateTime BirthDate { get; protected set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string PhoneNumber { get; set; }
+    public DateTime BirthDate { get; set; }
     
-    protected User(int id) => Id = id;
-    
-    protected User(){}
-
     public User(int id, string name, string email, string phoneNumber, DateTime birthDate)
     {
         Id = id;
@@ -29,8 +25,5 @@ public class User : BaseModel
         PhoneNumber = phoneNumber;
         BirthDate = birthDate;
     }
-    
-    
-    
     
 }

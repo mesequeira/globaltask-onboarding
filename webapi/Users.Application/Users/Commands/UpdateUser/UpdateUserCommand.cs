@@ -1,6 +1,7 @@
 ﻿// Application/Users/Commands/UpdateUser/UpdateUserCommand.cs
 
 using MediatR;
+using Users.Domain.Abstractions;
 
 namespace Users.Application.Users.Commands.UpdateUser;
 
@@ -10,4 +11,4 @@ public record UpdateUserCommand(
     string Email,
     string PhoneNumber,
     DateTime BirthDate
-) : IRequest<bool>;
+) : IRequest<Result<int>>;

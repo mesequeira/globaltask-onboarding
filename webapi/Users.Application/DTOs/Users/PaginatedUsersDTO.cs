@@ -2,7 +2,7 @@
 
 namespace Users.Application.DTOs.Users;
 
-public class UsersPaginatedListDTO
+public class PaginatedUsersDTO
 {
     public int TotalItems { get; set; }
     public int CurrentPage { get; set; }
@@ -10,11 +10,7 @@ public class UsersPaginatedListDTO
     public int TotalPages { get; set; }
     public IEnumerable<User> Users { get; set; }
 
-    public UsersPaginatedListDTO()
-    {
-    }
-
-    public UsersPaginatedListDTO(int totalItems, int currentPage, int pageSize, IEnumerable<User> users)
+    public PaginatedUsersDTO(int totalItems, int currentPage, int pageSize, IEnumerable<User> users)
     {
         TotalItems = totalItems;
         CurrentPage = currentPage;

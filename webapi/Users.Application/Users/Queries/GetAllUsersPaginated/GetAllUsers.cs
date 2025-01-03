@@ -7,5 +7,5 @@ using Users.Domain.Models;
 
 namespace Users.Application.Users.Queries.GetAllUsers;
 
-public record GetAllUsersQuery(int page, int size, string sortBy) : IRequest<Result<UsersPaginatedListDTO>>;
+public record GetAllUsersQuery(int page, int size, string sortBy) : IRequest<Result<PaginatedUsersDTO>>;
 //public record GetAllUsersQuery() : IRequest<IEnumerable<User>>;

@@ -2,7 +2,7 @@
 
 public sealed record Error(string Code, string? Description = null)
 {
-    public static readonly Error None = new (string.Empty);
+    public static readonly Error None = new (string.Empty, string.Empty);
 }
 
 public class Result<T>
@@ -27,7 +27,7 @@ public class Result<T>
         IsSuccess = isSuccess;
         StatusCode = statusCode;
         Error = error;
-        _value = value;
+        _value = isSuccess ? value : default!;
     }
     public T Value
     {
@@ -41,7 +41,7 @@ public class Result<T>
     
 
     public static Result<T> Sucess(T value, int code) => new(value, true, code,Error.None);
-    public static Result<T> Failure(T value, int code, Error error) => new(value, false, code, error);
+    public static Result<T> Failure(int code, Error error) => new(default!, false, code, error);
     
     
     public object CreateResponseObject()

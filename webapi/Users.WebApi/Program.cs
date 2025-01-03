@@ -4,6 +4,7 @@ using Users.Application.Users.Commands.CreateUser;
 using Users.Domain.Interfaces;
 using Users.Infrastructure.Persistence;
 using Users.Persistence;
+using Users.WebApi.Controllers.User.Examples;
 
 var builder = WebApplication.CreateBuilder(args);
 

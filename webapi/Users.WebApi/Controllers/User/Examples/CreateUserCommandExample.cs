@@ -1,6 +1,8 @@
 ﻿using Swashbuckle.AspNetCore.Filters;
 using Users.Application.Users.Commands.CreateUser;
 
+namespace Users.WebApi.Controllers.User.Examples;
+
 public class CreateUserCommandExample : IExamplesProvider<CreateUserCommand>
 {
     public CreateUserCommand GetExamples()
