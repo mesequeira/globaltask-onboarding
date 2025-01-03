@@ -7,11 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Controllers\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Users.Application\Users.Application.csproj" />
+      <ProjectReference Include="..\Users.Domain\Users.Domain.csproj" />
+      <ProjectReference Include="..\Users.Infrastructure\Users.Infrastructure.csproj" />
+      <ProjectReference Include="..\Users.Persistence\Users.Persistence.csproj" />
     </ItemGroup>
 
 </Project>
