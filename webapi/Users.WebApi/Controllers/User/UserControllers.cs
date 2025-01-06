@@ -42,8 +42,6 @@ public class UsersController : ControllerBase
         
         if (!result.IsSuccess)
         {
-            // Podrías devolver 400 (BadRequest), 409 (Conflict), etc., 
-            // dependiendo de la naturaleza del error.
             return BadRequest(result.CreateResponseObject());
         }
         

@@ -1,5 +1,7 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
+using Users.Application;
 using Users.Application.Users.Commands.CreateUser;
 using Users.Domain.Interfaces;
 using Users.Infrastructure.Persistence;
@@ -7,6 +9,16 @@ using Users.Persistence;
 using Users.WebApi.Controllers.User.Examples;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddControllers()
+    .AddFluentValidation(config =>
+    {
+        config.RegisterValidatorsFromAssemblyContaining<CreateUserValidator>();
+
+        // config.ImplicitlyValidateChildProperties = true;
+        // config.AutomaticValidationEnabled = false;
+    });
 
 Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
@@ -23,7 +35,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Creat
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddControllers();
+
 
 // Agregar servicios de Swagger
 builder.Services.AddEndpointsApiExplorer();
