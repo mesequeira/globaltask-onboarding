@@ -10,8 +10,8 @@ namespace Users.Domain.Users.Errors
     public static class UserErrors
     {
         public static Error NotFound(Guid id) 
-            => new("User.NotFound", $"User with id {id} was not found.");
+            => new(UserErrorCodes.NotFound, $"User with id {id} was not found.");
         public static Error SortByPropertyNotFound(string sortBy) 
-            => new("User.SortByPropertyNotFound", $"The property {sortBy} was not found.");
+            => new(UserErrorCodes.SortByPropertyNotFound, $"The property {sortBy} was not found.");
     }
 }

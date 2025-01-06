@@ -12,5 +12,5 @@ namespace Users.Application.Users.Queries
     public sealed record GetUsersQuery(
         int Page, 
         int Size, 
-        string SortBy) : IRequest<Result<IEnumerable<UserResponseDto>>>;
+        string SortBy) : IRequest<Result<PaginatedUserDto>>;
 }

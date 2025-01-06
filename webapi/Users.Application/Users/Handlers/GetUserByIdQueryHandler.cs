@@ -27,12 +27,12 @@ namespace Users.Application.Users.Handlers
 
             if(user == null)
             {
-                return Result<UserResponseDto>.Failure([UserErrors.NotFound(request.Id)]);
+                return Result<UserResponseDto>.Failure([UserErrors.NotFound(request.Id)], statusCode: 204);
             }
 
             UserResponseDto userResponse = user.Adapt<UserResponseDto>();
 
-            return Result<UserResponseDto>.Success(userResponse);
+            return Result<UserResponseDto>.Success(userResponse, statusCode: 200);
         }
     }
 }

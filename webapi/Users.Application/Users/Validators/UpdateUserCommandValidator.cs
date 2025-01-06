@@ -9,31 +9,10 @@ using Users.Domain.Users.Errors;
 
 namespace Users.Application.Users.Validators
 {
-    public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+    public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {
-        public CreateUserCommandValidator() 
+        public UpdateUserCommandValidator() 
         {
-            RuleFor(x => x.UserName)
-            .NotEmpty()
-            .WithMessage("UserName is required.")
-            .WithErrorCode(UserErrorCodes.RequiredUserName)
-            .MaximumLength(50)
-            .WithMessage("UserName cannot exceed 50 characters.")
-            .WithErrorCode(UserErrorCodes.UserNameTooLong);
-
-            RuleFor(x => x.Password)
-              .NotEmpty()
-              .WithMessage("Password is required.")
-              .WithErrorCode(UserErrorCodes.RequiredPassword)
-              .MinimumLength(8)
-              .WithMessage("Password must be at least 8 characters.")
-              .WithErrorCode(UserErrorCodes.InvalidPassword);
-
-            RuleFor(u => u.Birthday)
-                .LessThanOrEqualTo(DateTime.UtcNow.AddYears(-18))
-                .WithMessage("User must be at least 18 years old.")
-                .WithErrorCode(UserErrorCodes.InvalidBirthday);
-
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .WithMessage("Email is required.")
@@ -55,6 +34,14 @@ namespace Users.Application.Users.Validators
                 .MinimumLength(7)
                 .WithMessage("Phone number must be at least 7 characters.")
                 .WithErrorCode(UserErrorCodes.PhoneNumberTooShort);
+
+            RuleFor(x => x.Password)
+                .NotEmpty()
+                .WithMessage("Password is required.")
+                .WithErrorCode(UserErrorCodes.RequiredPassword)
+                .MinimumLength(8)
+                .WithMessage("Password must be at least 8 characters.")
+                .WithErrorCode(UserErrorCodes.InvalidPassword);
         }
     }
 }

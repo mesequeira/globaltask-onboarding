@@ -1,0 +1,29 @@
+services:
+  users.webapi:
+    image: ${DOCKER_REGISTRY-}userswebapi
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    build:
+      context: .
+      dockerfile: Users.WebApi/Dockerfile
+    environment:
+        - ConnectionStrings__ConnectionString=Server=${DB_SERVER_HOST},1433;Database=${DB_DATABASE};TrustServerCertificate=True;User Id=${DB_USER};Password=${DB_PASSWORD}
+    depends_on: 
+        - users.database
+
+  users.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+        - "1433:1433" 
+    environment:
+       - ACCEPT_EULA=YES
+       - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - sqlserver-data:/var/opt/mssql 
+
+volumes:
+  sqlserver-data: 
+    driver: local
+

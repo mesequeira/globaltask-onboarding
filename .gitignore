@@ -3,3 +3,20 @@
 ################################################################################
 
 /.vs
+
+# Ignorar carpetas bin y obj en cualquier nivel
+**/bin/
+**/obj/
+
+# Ignorar carpetas debug específicas de la versión
+**/debug/
+
+# Ignorar carpetas generadas por .NET en versiones específicas
+**/bin/Debug/
+**/obj/Debug/
+**/bin/Release/
+**/obj/Release/
+
+# Ignorar carpetas para una versión específica de .NET (ej. net9.0)
+**/bin/net9.0/
+**/obj/net9.0/

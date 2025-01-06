@@ -20,5 +20,29 @@ namespace Users.Domain.Users.Models
             Password = password;
             PhoneNumber = phoneNumber;
         }
+
+        public static User Create(string email, string password, string phoneNumber, string userName,DateTime birthday)
+        {
+            if(string.IsNullOrEmpty(email)) 
+                throw new ArgumentNullException("email");
+
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentNullException("password");
+
+            if (string.IsNullOrEmpty(phoneNumber))
+                throw new ArgumentNullException("phoneNumber");
+
+            if (string.IsNullOrEmpty(userName))
+                throw new ArgumentNullException("userName");
+
+            return new User
+            {
+                Email = email,
+                Password = password,
+                PhoneNumber = phoneNumber,
+                UserName = userName,
+                Birthday = birthday
+            };
+        }
     }
 }

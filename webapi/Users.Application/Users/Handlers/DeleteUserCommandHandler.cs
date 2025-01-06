@@ -31,14 +31,14 @@ namespace Users.Application.Users.Handlers
 
             if (user == null)
             {
-                return Result.Failure([UserErrors.NotFound(request.Id)]);
+                return Result.Failure([UserErrors.NotFound(request.Id)], statusCode: 404);
             }
 
             _userRepository.Delete(user);
 
             await _unitOfWork.SaveChangesAsync();
 
-            return Result.Success();
+            return Result.Success(statusCode: 200);
         }
     }
 }

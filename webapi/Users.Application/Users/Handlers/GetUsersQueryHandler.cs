@@ -18,7 +18,7 @@ using Users.Domain.Users.Models;
 
 namespace Users.Application.Users.Handlers
 {
-    public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<IEnumerable<UserResponseDto>>>
+    public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<PaginatedUserDto>>
     {
         private readonly IUserRepository _userRepository;
 
@@ -27,22 +27,24 @@ namespace Users.Application.Users.Handlers
             _userRepository = userRepository;
         }
 
-        public async Task<Result<IEnumerable<UserResponseDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedUserDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
         {
             var propertyInfo = typeof(User).GetProperty(request.SortBy);
 
             if (propertyInfo == null)
             {
-                return Result<IEnumerable<UserResponseDto>>.Failure([UserErrors.SortByPropertyNotFound(request.SortBy)]);
+                return Result<PaginatedUserDto>.Failure([UserErrors.SortByPropertyNotFound(request.SortBy)], statusCode: 400);
             }
 
             Expression<Func<User, object>> sortExpression = GetSortProperty(request.SortBy);
 
             List<User> users = await _userRepository.GetAllAsync(sortExpression, request.Page, request.Size);
 
-            IEnumerable<UserResponseDto> usersDto = users.Adapt<IEnumerable<UserResponseDto>>();
+            List<UserResponseDto> usersDto = users.Adapt<List<UserResponseDto>>();
 
-            return Result<IEnumerable<UserResponseDto>>.Success(usersDto);
+            PaginatedUserDto response = new(usersDto.Count, request.Size, request.Page, usersDto);
+
+            return Result<PaginatedUserDto>.Success(response, statusCode: 200);
         }
 
         private static Expression<Func<User, object>> GetSortProperty(string sortyBy)

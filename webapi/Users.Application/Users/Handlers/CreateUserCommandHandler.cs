@@ -16,7 +16,7 @@ using Users.Domain.Users.Models;
 
 namespace Users.Application.Users.Handlers
 {
-    internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<Guid>>
+    public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<Guid>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -40,22 +40,21 @@ namespace Users.Application.Users.Handlers
                                     .Select(e => new Error(e.ErrorCode, e.ErrorMessage))
                                     .ToArray();
                 
-                return Result<Guid>.Failure(errors);
+                return Result<Guid>.Failure(errors, statusCode: 400);
             }
 
-            User user = new User
-            {
-                UserName = request.UserName,
-                Email = request.Email,
-                Birthday = request.Birthday,
-                Password = request.Password,
-                PhoneNumber = request.PhoneNumber
-            };
+            User user = User.Create(
+                request.Email, 
+                request.Password, 
+                request.PhoneNumber, 
+                request.UserName, 
+                request.Birthday
+            );
 
             _userRepository.Insert(user);
             await _unitOfWork.SaveChangesAsync();
 
-            return Result<Guid>.Success(user.Id);
+            return Result<Guid>.Success(user.Id, statusCode: 201);
         }
     }
 }
