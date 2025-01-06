@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76669311-F676-4AB6-B411-3C3B9C02C50A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CAB23C34-681C-48CA-A9D0-74DD184C145F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Application", "Users.Application\Users.Application.csproj", "{48D27618-063D-443C-9073-70502B9287A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Domain", "Users.Domain\Users.Domain.csproj", "{58B87094-3140-4C45-9316-D903194D7271}"
@@ -27,6 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.env = .env
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{247E7AA2-93C1-4121-AA64-46D9A567C3F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Tests", "Users.Tests\Users.Tests.csproj", "{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,7 @@ Global
 		{ECF21CC9-459C-456D-A182-0682E1DCFC41} = {89001BF5-BDEA-4989-955F-94EDF159E6BC}
 		{5091662F-D4D1-4E3C-B457-DD1503FCA4A0} = {89001BF5-BDEA-4989-955F-94EDF159E6BC}
 		{2E52D347-9073-413C-A25F-EF1DD4A91B8D} = {4827A862-95D8-492B-A14C-5FBAFF4C77AB}
+		{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52} = {247E7AA2-93C1-4121-AA64-46D9A567C3F5}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{48D27618-063D-443C-9073-70502B9287A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -63,5 +66,9 @@ Global
 		{2E52D347-9073-413C-A25F-EF1DD4A91B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E52D347-9073-413C-A25F-EF1DD4A91B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E52D347-9073-413C-A25F-EF1DD4A91B8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{220D0BFE-0CC1-482B-AA87-F1D2BF5C4E52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
