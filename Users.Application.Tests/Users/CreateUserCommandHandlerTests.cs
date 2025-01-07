@@ -1,125 +1,115 @@
 ﻿using FluentAssertions;
-using FluentValidation;
-using FluentValidation.TestHelper;
-using FluentValidation.Results;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Users.Application.Users.Commands;
-using Users.Application.Users.Handlers;
-using Users.Application.Users.Validators;
+using Users.Application.Users.Commands.Create;
 using Users.Domain.Abstractions;
 using Users.Domain.Abstractions.Interfaces;
 using Users.Domain.Users.Abstractions;
 using Users.Domain.Users.Errors;
 
-namespace Users.Application.Tests.Users
+namespace Users.Application.Tests.Users;
+
+public class CreateUserCommandHandlerTests
 {
-    public class CreateUserCommandHandlerTests
+    private readonly IUserRepository _userRepositoryMock;
+    private readonly IUnitOfWork _unitOfWorkMock;
+    private readonly CreateUserCommandValidator _userValidator;
+    private readonly CreateUserCommandHandler _createUserCommandHandler;
+
+    private readonly string UserName = "TestUsername";
+    private readonly string Password = "TestPassword";
+    private readonly string Email = "test@gmail.com";
+    private readonly string PhoneNumber = "1127554941";
+
+    public CreateUserCommandHandlerTests()
     {
-        private readonly IUserRepository _userRepositoryMock;
-        private readonly IUnitOfWork _unitOfWorkMock;
-        private readonly CreateUserCommandValidator _userValidator;
-        private readonly CreateUserCommandHandler _createUserCommandHandler;
+        _userRepositoryMock = Substitute.For<IUserRepository>();
+        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
+        _userValidator = new();
 
-        private readonly string UserName = "TestUsername";
-        private readonly string Password = "TestPassword";
-        private readonly string Email = "test@gmail.com";
-        private readonly string PhoneNumber = "1127554941";
+        _createUserCommandHandler = new CreateUserCommandHandler(_userRepositoryMock, _unitOfWorkMock, _userValidator);
+    }
 
-        public CreateUserCommandHandlerTests()
-        {
-            _userRepositoryMock = Substitute.For<IUserRepository>();
-            _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-            _userValidator = new();
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenUserIsValid()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
 
-            _createUserCommandHandler = new CreateUserCommandHandler(_userRepositoryMock, _unitOfWorkMock, _userValidator);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnSuccess_WhenUserIsValid()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
+        result.Errors.Should().BeEmpty();
+        result.IsSuccess.Should().BeTrue();
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenUserNameIsEmpty()
+    {
+        var createUserCommand = new CreateUserCommand(string.Empty, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
 
-            result.Errors.Should().BeEmpty();
-            result.IsSuccess.Should().BeTrue();
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenUserNameIsEmpty()
-        {
-            var createUserCommand = new CreateUserCommand(string.Empty, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
+        result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredUserName);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenUserNameIsTooLong()
+    {
+        var longUserName = new string('a', 51);
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredUserName);
-        }
+        var createUserCommand = new CreateUserCommand(longUserName, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenUserNameIsTooLong()
-        {
-            var longUserName = new string('a', 51);
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-            var createUserCommand = new CreateUserCommand(longUserName, Email, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
+        result.Errors.First().Code.Should().Be(UserErrorCodes.UserNameTooLong);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenAgeIsLessThan18()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, Email, Password, PhoneNumber, DateTime.UtcNow);
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.UserNameTooLong);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenAgeIsLessThan18()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, Email, Password, PhoneNumber, DateTime.UtcNow);
+        result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidBirthday);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenEmailIsInvalid()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, "invalidemail", Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidBirthday);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenEmailIsInvalid()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, "invalidemail", Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
+        result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidEmailFormat);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenEmailIsEmpty()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, string.Empty, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidEmailFormat);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenEmailIsEmpty()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, string.Empty, Password, PhoneNumber, DateTime.UtcNow.AddYears(-20));
+        result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredEmail);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenPhoneNumberIsInvalid()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, Email, Password, "1231@gmail.com", DateTime.UtcNow.AddYears(-20));
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredEmail);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenPhoneNumberIsInvalid()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, Email, Password, "1231@gmail.com", DateTime.UtcNow.AddYears(-20));
+        result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidPhoneNumber);
+    }
 
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
+    [Fact]
+    public async Task Handle_ShouldReturnError_WhenPhoneNumberIsEmpty()
+    {
+        var createUserCommand = new CreateUserCommand(UserName, Email, Password, string.Empty, DateTime.UtcNow.AddYears(-20));
 
-            result.Errors.First().Code.Should().Be(UserErrorCodes.InvalidPhoneNumber);
-        }
+        Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
 
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenPhoneNumberIsEmpty()
-        {
-            var createUserCommand = new CreateUserCommand(UserName, Email, Password, string.Empty, DateTime.UtcNow.AddYears(-20));
-
-            Result<Guid> result = await _createUserCommandHandler.Handle(createUserCommand, default);
-
-            result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredPhoneNumber);
-        }
+        result.Errors.First().Code.Should().Be(UserErrorCodes.RequiredPhoneNumber);
     }
 }

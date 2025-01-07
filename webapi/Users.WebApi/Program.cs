@@ -1,11 +1,11 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
-using Users.Application.Users.Commands;
+using Users.Application.Users.Commands.Create;
 using Users.Domain.Abstractions.Interfaces;
 using Users.Domain.Users.Abstractions;
 using Users.Persistence;
+using Users.Persistence.Interceptors;
 using Users.Persistence.Users.Repositories;
 using Users.WebApi.Extensions;
 
@@ -20,11 +20,16 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddValidatorsFromAssembly(applicationAssembly);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString")));
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddSingleton<UpdateAuditablePropsInterceptor>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(
+        (sp, options) => options
+            .UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString"))
+            .AddInterceptors(sp.GetRequiredService<UpdateAuditablePropsInterceptor>())
+        );
 
 builder.Services.AddControllers();
 

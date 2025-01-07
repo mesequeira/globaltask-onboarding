@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
-namespace Users.Infrastructure
+namespace Users.Infrastructure;
+
+public static class InfrastructureAssembly
 {
-    public static class InfrastructureAssembly
-    {
-        public static Assembly CurrentAssembly = typeof(InfrastructureAssembly).Assembly;
-    }
+    public static Assembly CurrentAssembly = typeof(InfrastructureAssembly).Assembly;
 }

@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Users.WebApi.Users.Dtos;
 
-namespace Users.WebApi.Users.Dtos
+public class CreateUserRequest
 {
-    public class CreateUserRequest
-    {
-        public string UserName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty; 
-        public string Password { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
-        public DateTime Birthday { get; set; }
-    }
+    public string UserName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty; 
+    public string Password { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public DateTime Birthday { get; set; }
 }

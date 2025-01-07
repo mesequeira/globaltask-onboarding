@@ -1,44 +1,27 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Users.Application.Users.Dtos;
-using Users.Domain.Abstractions;
 using Users.Domain.Users.Abstractions;
-using Users.Domain.Users.Errors;
 using Users.Domain.Users.Models;
 
-namespace Users.Persistence.Users.Repositories
+namespace Users.Persistence.Users.Repositories;
+
+public sealed class UserRepository(ApplicationDbContext context) : IUserRepository
 {
-    public sealed class UserRepository : IUserRepository
+    public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) 
+        => context.Users.SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
+
+    public void Insert(User user) => context.Users.Add(user);
+    public void Update(User user) => context.Users.Update(user);
+    public void Delete(User user) => context.Users.Remove(user);
+    public async Task<List<User>> GetAllAsync(Expression<Func<User, object>> sortExpression, int page, int size, CancellationToken cancellationToken = default)
     {
-        private readonly ApplicationDbContext _context;
-        public UserRepository(ApplicationDbContext context) 
-        { 
-            _context = context;
-        }
+        IQueryable<User> usersQuery = context.Users.AsQueryable();
 
-        public Task<User?> GetByIdAsync(Guid id) 
-            => _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+        usersQuery = usersQuery.OrderBy(sortExpression);
+        usersQuery = usersQuery.Skip((page - 1) * size).Take(size);
 
-        public void Insert(User user) => _context.Users.Add(user);
-        public void Update(User user) => _context.Users.Update(user);
-        public void Delete(User user) => _context.Users.Remove(user);
-        public async Task<List<User>> GetAllAsync(Expression<Func<User, object>> sortExpression, int page, int size)
-        {
-            IQueryable<User> usersQuery = _context.Users.AsQueryable();
+        List<User> users = await usersQuery.ToListAsync(cancellationToken);
 
-            usersQuery = usersQuery.OrderBy(sortExpression);
-            usersQuery = usersQuery.Skip((page - 1) * size).Take(size);
-
-            List<User> users = await usersQuery.ToListAsync();
-
-            return users;
-        }
+        return users;
     }
 }

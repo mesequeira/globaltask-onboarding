@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Users.Domain.Abstractions;
 
-namespace Users.Domain.Abstractions
+public class Error(string code, string? description = null)
 {
-    public class Error
-    {
-        public Error(string code, string? description = null) 
-        {
-            Code = code;
-            Description = description;
-        }
-        public string Code { get; set; } = null!;
-        public string? Description { get; set; } = null!;
+    public string Code { get; set; } = code!;
+    public string? Description { get; set; } = description!;
 
-        public static readonly Error None = new(string.Empty);
-    }
+    public static readonly Error None = new(string.Empty);
 }
