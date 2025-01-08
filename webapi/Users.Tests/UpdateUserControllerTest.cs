@@ -1,171 +1,208 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using Moq;
+﻿using FluentValidation.TestHelper;
 using Users.Application.Users.Commands.UpdateUser;
-using Users.Domain.Abstractions;
-using Users.WebApi.Controllers.User;
-using Xunit;
 
 namespace Users.Tests
 {
-    public class UpdateUsersControllerTests
+    public class UpdateUserCommandTests
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly UsersController _controller;
-
-        public UpdateUsersControllerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _controller = new UsersController(_mediatorMock.Object);
-        }
-
         [Fact]
-        public async Task Update_ShouldReturnNoContent_WhenResultIsSuccess()
+        public async Task Update_ShouldReturnNoContent_WhenAllFieldsAreValid()
         {
-            // ---------- ARRANGE ----------
-            const int userId = 1;
-            var command = new UpdateUserCommand(
-                Id: 0,  // El controller sobrescribirá este valor con 'userId'
-                Name: "John Updated",
-                Email: "john.updated@example.com",
-                PhoneNumber: "9999999",
-                BirthDate: new DateTime(1995, 5, 5)
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1, // ID válido
+                "Updated Name",
+                "updated.email@example.com",
+                "987654321",
+                DateTime.Today.AddYears(-25) // Usuario mayor de 18 años
             );
 
-            // Simulamos un resultado exitoso que retorna 204
-            var successResult = Result<int>.Sucess(userId, 204);
+            var validator = new UpdateUserValidator();
 
-            _mediatorMock
-                .Setup(m => m.Send(It.IsAny<UpdateUserCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(successResult);
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
 
-            // ---------- ACT ----------
-            // Llamamos al método Update con id = userId
-            var actionResult = await _controller.Update(userId, command);
-
-            // ---------- ASSERT ----------
-            // Verificamos que es un NoContentResult
-            var noContentResult = actionResult as NoContentResult;
-            noContentResult.Should().NotBeNull("debe retornar NoContent cuando la actualización es exitosa");
-
-            // Verificamos que el mediador fue llamado una sola vez 
-            // con un UpdateUserCommand cuyo Id sea 1
-            _mediatorMock.Verify(m => m.Send(It.Is<UpdateUserCommand>(c => c.Id == userId), 
-                                             It.IsAny<CancellationToken>()),
-                                 Times.Once);
+            // Assert
+            result.ShouldNotHaveValidationErrorFor(x => x.Name);
+            result.ShouldNotHaveValidationErrorFor(x => x.Email);
+            result.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber);
+            result.ShouldNotHaveValidationErrorFor(x => x.BirthDate);
         }
 
         [Fact]
-        public async Task Update_ShouldReturnNotFound_WhenResultIs404()
+        public async Task Update_ShouldReturnBadRequest_WhenPhoneIsTooShort()
         {
-            // ---------- ARRANGE ----------
-            const int userId = 10;
-            var command = new UpdateUserCommand(
-                Id: 0, 
-                Name: "Unknown",
-                Email: "unknown@example.com",
-                PhoneNumber: "9999999",
-                BirthDate: DateTime.Now
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "123", // Teléfono demasiado corto
+                DateTime.Today.AddYears(-20)
             );
 
-            // Simulamos un resultado fallido con 404
-            var notFoundResult = Result<int>.Failure(404, new Error("USER_NOT_FOUND", "No se encontró el usuario."));
-            _mediatorMock
-                .Setup(m => m.Send(It.IsAny<UpdateUserCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(notFoundResult);
+            var validator = new UpdateUserValidator();
 
-            // ---------- ACT ----------
-            var actionResult = await _controller.Update(userId, command);
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
 
-            // ---------- ASSERT ----------
-            var notFoundObjectResult = actionResult as NotFoundObjectResult;
-            notFoundObjectResult.Should().NotBeNull("debe retornar NotFound cuando el handler retorna 404");
-
-            // El controller retorna result.CreateResponseObject(), un objeto anónimo
-            // Podríamos verificarlo con BeEquivalentTo(...) según la forma:
-            notFoundObjectResult!.Value.Should().BeEquivalentTo(new
-            {
-                isSuccess = false,
-                statusCode = 404,
-                ErrorCode = "USER_NOT_FOUND",
-                Message = "No se encontró el usuario."
-            });
-
-            _mediatorMock.Verify(m => m.Send(It.Is<UpdateUserCommand>(c => c.Id == userId), 
-                                             It.IsAny<CancellationToken>()),
-                                 Times.Once);
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+                .WithErrorMessage("El teléfono no tiene el mínimo de caracteres (7).");
         }
 
         [Fact]
-        public async Task Update_ShouldReturnBadRequest_WhenIdsDontMatch()
+        public async Task Update_ShouldReturnBadRequest_WhenPhoneContainsLetters()
         {
-            // 1. Levantas la app en memoria con WebApplicationFactory
-            using var factory = new WebApplicationFactory<Program>();
-            using var client = factory.CreateClient();
-
-            // 2. Creas el payload con ID=99
-            var payload = new
-            {
-                id = 99,
-                name = "Mismatch",
-                email = "mismatch@example.com",
-                phoneNumber = "111222333",
-                birthDate = DateTime.Now.ToString("yyyy-MM-dd")
-            };
-
-            // 3. Envías la petición
-            var response = await client.PatchAsJsonAsync("/api/users/5", payload);
-
-            // 4. Verificas la respuesta
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var content = await response.Content.ReadAsStringAsync();
-            content.Should().Contain("El ID del usuario no coincide con la ruta.");
-        }
-
-        [Fact]
-        public async Task Update_ShouldReturnBadRequest_WhenHandlerReturnsOtherStatus()
-        {
-            // ---------- ARRANGE ----------
-            const int userId = 2;
-            var command = new UpdateUserCommand(
-                Id: 0,
-                Name: "Any Name",
-                Email: "any@example.com",
-                PhoneNumber: "55555",
-                BirthDate: new DateTime(1990, 1, 1)
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "123ABC456", // Teléfono contiene letras
+                DateTime.Today.AddYears(-20)
             );
 
-            // Simulamos un Failure 400 distinto
-            var failureResult = Result<int>.Failure(400, new Error("ANY_ERROR", "Algo salió mal."));
+            var validator = new UpdateUserValidator();
 
-            _mediatorMock
-                .Setup(m => m.Send(It.IsAny<UpdateUserCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(failureResult);
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
 
-            // ---------- ACT ----------
-            var actionResult = await _controller.Update(userId, command);
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+                .WithErrorMessage("El teléfono debe contener solo números.");
+        }
 
-            // ---------- ASSERT ----------
-            var badRequestObjectResult = actionResult as BadRequestObjectResult;
-            badRequestObjectResult.Should().NotBeNull("debe retornar BadRequest cuando el handler retorna 400");
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenPhoneIsTooLong()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "123456789012345", // Teléfono demasiado largo
+                DateTime.Today.AddYears(-20)
+            );
 
-            badRequestObjectResult!.Value.Should().BeEquivalentTo(new
-            {
-                isSuccess = false,
-                statusCode = 400,
-                ErrorCode = "ANY_ERROR",
-                Message = "Algo salió mal."
-            });
+            var validator = new UpdateUserValidator();
 
-            _mediatorMock.Verify(m => m.Send(It.Is<UpdateUserCommand>(c => c.Id == userId), 
-                                             It.IsAny<CancellationToken>()),
-                                 Times.Once);
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+                .WithErrorMessage("El teléfono tiene más del máximo de caracteres (13).");
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenPhoneIsEmpty()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "", // Teléfono vacío
+                DateTime.Today.AddYears(-20)
+            );
+
+            var validator = new UpdateUserValidator();
+
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+                .WithErrorMessage("El teléfono es obligatorio.");
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenBirthDateIsEmpty()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "1234567890",
+                default // Fecha de nacimiento vacía
+            );
+
+            var validator = new UpdateUserValidator();
+
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.BirthDate)
+                .WithErrorMessage("La fecha de nacimiento es obligatoria.");
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenUserIsUnder18YearsOld()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "valid.email@example.com",
+                "1234567890",
+                DateTime.Today.AddYears(-10) // Usuario menor de 18 años
+            );
+
+            var validator = new UpdateUserValidator();
+
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.BirthDate)
+                .WithErrorMessage("Debes tener al menos 18 años.");
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenEmailIsInvalid()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "invalid-email", // Email inválido
+                "1234567890",
+                DateTime.Today.AddYears(-20)
+            );
+
+            var validator = new UpdateUserValidator();
+
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.Email)
+                .WithErrorMessage("El email no tiene un formato válido.");
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnBadRequest_WhenEmailIsEmpty()
+        {
+            // Arrange
+            var updateCommand = new UpdateUserCommand(
+                1,
+                "Valid Name",
+                "", // Email vacío
+                "1234567890",
+                DateTime.Today.AddYears(-20)
+            );
+
+            var validator = new UpdateUserValidator();
+
+            // Act
+            var result = await validator.TestValidateAsync(updateCommand);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.Email)
+                .WithErrorMessage("El email es obligatorio.");
         }
     }
 }

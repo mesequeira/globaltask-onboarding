@@ -17,8 +17,10 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
         
         RuleFor(command => command.PhoneNumber)
             .NotEmpty().WithMessage("El teléfono es obligatorio.")
-            .MinimumLength(7).WithMessage("El teléfono no tiene el minimo de caracteres.(7)")
-            .MaximumLength(13).WithMessage("El teléfono tiene mas del máximo de caracteres.(11)");
+            .MinimumLength(7).WithMessage("El teléfono no tiene el mínimo de caracteres (7).")
+            .MaximumLength(13).WithMessage("El teléfono tiene más del máximo de caracteres (13).")
+            .Matches(@"^\d+$").WithMessage("El teléfono debe contener solo números.");
+
         
         RuleFor(command => command.BirthDate)
             .NotEmpty().WithMessage("La fecha de nacimiento es obligatoria.")

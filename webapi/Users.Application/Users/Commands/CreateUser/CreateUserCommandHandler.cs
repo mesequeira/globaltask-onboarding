@@ -20,11 +20,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
     public async Task<Result<int>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        // Validar Usuario
-        if (false)
-        {
-            return Result<int>.Failure(400, new Error("0001", "User No se pudo crear el usuario"));
-        }
         
         var user = new User(
             request.Name,
