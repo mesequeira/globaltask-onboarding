@@ -28,13 +28,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Worker.Persistence", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Worker.Infrastructure", "Users.Worker.Infrastructure\Users.Worker.Infrastructure.csproj", "{3A131628-7001-4D01-9268-B8F6CB3633FA}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B2598076-309A-4BBC-BDE0-F2782F02AB5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{80F38E4D-0248-4853-B911-27254445251E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -57,12 +56,19 @@ Global
 		{3A131628-7001-4D01-9268-B8F6CB3633FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A131628-7001-4D01-9268-B8F6CB3633FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A131628-7001-4D01-9268-B8F6CB3633FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2598076-309A-4BBC-BDE0-F2782F02AB5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2598076-309A-4BBC-BDE0-F2782F02AB5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2598076-309A-4BBC-BDE0-F2782F02AB5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2598076-309A-4BBC-BDE0-F2782F02AB5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{80F38E4D-0248-4853-B911-27254445251E} = {F0B8EA62-2CC4-41ED-8FF9-646F288482DD}
 		{F0B8EA62-2CC4-41ED-8FF9-646F288482DD} = {E3871714-3B3E-471F-AA26-B77E47ABF73D}
 		{8043343C-F511-4BB3-9F23-9C31AB2F0FCC} = {E3871714-3B3E-471F-AA26-B77E47ABF73D}
 		{9CE6DDD9-6A25-4DD3-8A60-B387974D5FAD} = {E3871714-3B3E-471F-AA26-B77E47ABF73D}
-		{80F38E4D-0248-4853-B911-27254445251E} = {F0B8EA62-2CC4-41ED-8FF9-646F288482DD}
 		{65A24BF5-D3DE-4C64-B757-7F5E9DA36469} = {8043343C-F511-4BB3-9F23-9C31AB2F0FCC}
 		{09E74B1E-6689-4C55-BAA3-4B24FA269A1A} = {8043343C-F511-4BB3-9F23-9C31AB2F0FCC}
 		{D9B93891-3530-4938-8713-CB1AD52F49DD} = {9CE6DDD9-6A25-4DD3-8A60-B387974D5FAD}

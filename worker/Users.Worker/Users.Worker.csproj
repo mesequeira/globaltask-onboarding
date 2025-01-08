@@ -5,9 +5,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-Users.Worker-73fe5917-682b-4efa-bad6-6abd2c1fbe33</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.3.4" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Users.Worker.Application\Users.Worker.Application.csproj" />
+    <ProjectReference Include="..\Users.Worker.Domain\Users.Worker.Domain.csproj" />
+    <ProjectReference Include="..\Users.Worker.Infrastructure\Users.Worker.Infrastructure.csproj" />
+    <ProjectReference Include="..\Users.Worker.Persistence\Users.Worker.Persistence.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+services:
+  users.worker:
+    image: ${DOCKER_REGISTRY-}usersworker
+    build:
+      context: .
+      dockerfile: Users.Worker/Dockerfile
+    networks:
+        - users-network
+    environment:
+        - ConnectionStrings__ConnectionString=Server=${DB_SERVER_HOST},1433;Database=${DB_DATABASE};TrustServerCertificate=True;User Id=${DB_USER};Password=${DB_PASSWORD}
+        - MESSAGE_BROKER_HOST=${MESSAGE_BROKER_HOST}
+        - MESSAGE_BROKER_USERNAME=${MESSAGE_BROKER_USERNAME} 
+        - MESSAGE_BROKER_PASSWORD=${MESSAGE_BROKER_PASSWORD} 
+  users.rabbitmq:
+    image: rabbitmq:3-management
+    container_name: UsersQueue
+    hostname: users-queue
+    volumes:
+        - ./.containers/queue/data:/var/lib/rabbitmq 
+        - ./.containers/queue/log:/var/log/rabbitmq 
+    environment:
+        RABBITMQ_DEFAULT_USER: guest
+        RABBITMQ_DEFAULT_PASS: guest
+    networks:
+        - users-network
+    ports:
+        - 3000:15672 
+
+networks:
+  users-network:
+    name: users-network
+    driver: bridge
+
+      
+  

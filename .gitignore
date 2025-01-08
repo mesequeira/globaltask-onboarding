@@ -1,7 +1,7 @@
 ﻿################################################################################
 # Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
 ################################################################################
-
+**/.containers
 /.vs
 
 # Ignorar carpetas bin y obj en cualquier nivel

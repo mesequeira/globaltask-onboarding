@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NSubstitute;
-using Users.Application.Users.Commands;
+using Users.Application.Abstractions;
 using Users.Application.Users.Commands.Create;
 using Users.Domain.Abstractions;
 using Users.Domain.Abstractions.Interfaces;
@@ -13,6 +13,7 @@ public class CreateUserCommandHandlerTests
 {
     private readonly IUserRepository _userRepositoryMock;
     private readonly IUnitOfWork _unitOfWorkMock;
+    private readonly IEventBus _eventBusMock;
     private readonly CreateUserCommandValidator _userValidator;
     private readonly CreateUserCommandHandler _createUserCommandHandler;
 
@@ -25,9 +26,11 @@ public class CreateUserCommandHandlerTests
     {
         _userRepositoryMock = Substitute.For<IUserRepository>();
         _unitOfWorkMock = Substitute.For<IUnitOfWork>();
+        _eventBusMock = Substitute.For<IEventBus>();
+
         _userValidator = new();
 
-        _createUserCommandHandler = new CreateUserCommandHandler(_userRepositoryMock, _unitOfWorkMock, _userValidator);
+        _createUserCommandHandler = new CreateUserCommandHandler(_userRepositoryMock, _unitOfWorkMock, _userValidator, _eventBusMock);
     }
 
     [Fact]
