@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using Users.Application.Abstractions;
+using Users.Application.Common.Services;
+using Users.Application.Common.Services.Interfaces;
 using Users.Application.Users.Commands.Create;
 using Users.Domain.Abstractions.Interfaces;
 using Users.Domain.Users.Abstractions;
-using Users.Domain.Users.Events;
 using Users.Infrastructure.MessageBroker;
 using Users.Persistence;
 using Users.Persistence.Interceptors;
@@ -49,13 +50,15 @@ builder.Services.AddMassTransit(busConfigurator =>
             h.Password(settings.Password);
         });
 
-        configurator.Message<UserRegisteredEvent>(x =>
-        {
-            x.SetEntityName("user-registered-event");
-        });
+        //configurator.Message<UserRegisteredEvent>(x =>
+        //{
+        //    x.SetEntityName("user-registered-event");
+        //});
     });
 
 });
+
+builder.Services.AddTransient(typeof(IPropertyChangeTracker<,>), typeof(PropertyChangeTracker<,>));
 
 builder.Services.AddTransient<IEventBus, EventBus>();
 

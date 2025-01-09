@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using Users.Application.Abstractions;
+using Users.Application.Common.Services.Interfaces;
+using Users.Application.Users.Events;
 using Users.Domain.Abstractions;
 using Users.Domain.Abstractions.Interfaces;
 using Users.Domain.Users.Abstractions;
@@ -9,7 +12,13 @@ using Users.Domain.Users.Models;
 
 namespace Users.Application.Users.Commands.Update;
 
-public sealed class UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IValidator<UpdateUserCommand> updateUserValidator) : IRequestHandler<UpdateUserCommand, Result>
+public sealed class UpdateUserCommandHandler(
+        IUserRepository userRepository, 
+        IUnitOfWork unitOfWork, 
+        IValidator<UpdateUserCommand> updateUserValidator,
+        IEventBus eventBus,
+        IPropertyChangeTracker<User, UpdateUserCommand> propertyChangeTracker
+    ) : IRequestHandler<UpdateUserCommand, Result>
 {
     public async Task<Result> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
@@ -32,10 +41,14 @@ public sealed class UpdateUserCommandHandler(IUserRepository userRepository, IUn
             return Result.Failure([UserErrors.NotFound(request.Id)], statusCode: 404);
         }
 
+        Dictionary<string, FieldChange> updatedProps = propertyChangeTracker.GetChanges(user, request);
+
         user.Update(request.Email, request.Password, request.PhoneNumber);
 
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await eventBus.PublishAsync(new UserUpdatedEvent(request.Email, updatedProps));
 
         return Result.Success();
     }

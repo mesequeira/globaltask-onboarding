@@ -6,11 +6,11 @@ using Users.Worker.Domain.Users.Notifications;
 
 namespace Users.Worker.Application.Users.Consumers;
 
-public sealed class UserRegisteredEventConsumer(IEmailService emailService) : IConsumer<UserRegisteredEvent>
+public sealed class UserUpdatedEventConsumer(IEmailService emailService) : IConsumer<UserUpdatedEvent>
 {
-    public async Task Consume(ConsumeContext<UserRegisteredEvent> context)
+    public async Task Consume(ConsumeContext<UserUpdatedEvent> context)
     {
-        EmailMessage message = UserEmailMessages.UserRegistered(context.Message.UserName);
+        EmailMessage message = UserEmailMessages.UserUpdated(context.Message.ModifiedFields);
 
         await emailService.SendEmailAsync(
                 context.Message.Email,

@@ -114,15 +114,16 @@ public class UsersController(ISender _sender) : ControllerBase
     /// Elimina un usuario por id.
     /// </summary>
     /// <param name="id">Identificador del usuario.</param>
+    /// <param name="reason">Motivo por el cual se va a eliminar el usuario.</param>
     /// <returns>Retorna un objeto Result con "isSuccess=true" y sin valor en caso de éxito (campo "value" = null).</returns>
     /// <response code="200">Usuario eliminado exitosamente.</response>
     /// <response code="404">El usuario no existe.</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteUser(Guid id, string reason, CancellationToken cancellationToken = default)
     {
-        DeleteUserCommand command = new(id);
+        DeleteUserCommand command = new(id, reason);
 
         Result result = await _sender.Send(command, cancellationToken);
 

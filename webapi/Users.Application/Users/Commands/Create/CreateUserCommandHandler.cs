@@ -2,10 +2,10 @@
 using FluentValidation.Results;
 using MediatR;
 using Users.Application.Abstractions;
+using Users.Application.Users.Events;
 using Users.Domain.Abstractions;
 using Users.Domain.Abstractions.Interfaces;
 using Users.Domain.Users.Abstractions;
-using Users.Domain.Users.Events;
 using Users.Domain.Users.Models;
 
 namespace Users.Application.Users.Commands.Create;

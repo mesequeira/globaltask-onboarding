@@ -1,8 +1,10 @@
 using MassTransit;
-using MassTransit.Topology;
+using Microsoft.Extensions.DependencyInjection;
 using Users.Worker;
+using Users.Worker.Application.Emails;
 using Users.Worker.Application.Users.Consumers;
-using Users.Worker.Domain.Users.Events;
+using Users.Worker.Infrastructure.Emails;
+using Users.Worker.Infrastructure.Emails.Services;
 using Users.Worker.Infrastructure.MessageBroker;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -24,7 +26,8 @@ builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-    busConfigurator.AddConsumer<UserRegisteredEventConsumer>();
+    busConfigurator.AddConsumers(typeof(UserDeletedEventConsumer).Assembly);
+    //busConfigurator.AddConsumer<UserRegisteredEventConsumer>();
 
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
@@ -36,19 +39,27 @@ builder.Services.AddMassTransit(busConfigurator =>
             h.Password(settings.Password);
         });
 
-        configurator.ReceiveEndpoint("user-registered-queue", e =>
-        {
-            e.ConfigureConsumer<UserRegisteredEventConsumer>(context);
-        });
+        configurator.ConfigureEndpoints(context);
 
-        configurator.Message<UserRegisteredEvent>(x =>
-        {
-            x.SetEntityName("user-registered-event");
-        });
+        //configurator.ReceiveEndpoint("user-registered-queue", e =>
+        //{
+        //    e.ConfigureConsumer<UserRegisteredEventConsumer>(context);
+        //});
+
 
     });
 });
 
+EmailSettings emailSettings = new(
+    configuration["EMAIL_SENDER_EMAIL"]!, 
+    configuration["EMAIL_SENDER_PASSWORD"]!, 
+    configuration.GetValue<int>("EMAIL_PORT"), 
+    configuration["EMAIL_HOST"]!
+);
+
+builder.Services.AddSingleton(emailSettings);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var host = builder.Build();
 host.Run();
