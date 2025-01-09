@@ -1,0 +1,9 @@
+services:
+  users.webapi:
+    image: ${DOCKER_REGISTRY-}userswebapi
+    build:
+      context: .
+      dockerfile: Users.WebApi/Dockerfile
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest    
+

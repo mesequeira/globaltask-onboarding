@@ -4,6 +4,9 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>2456fcdc-ca6a-4c16-a1cb-b9fb634f2abb</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     </PropertyGroup>
 	<ItemGroup>
 		<Content Update="appsettings.json">
@@ -16,6 +19,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Azure.Identity" Version="1.10.3" />
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
         <PackageReference Include="FluentValidation" Version="11.5.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="MediatR" Version="11.0.0" />
@@ -34,6 +38,7 @@
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />

@@ -12,8 +12,8 @@ using Users.Persistence;
 namespace Users.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250108145139_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250109143140_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

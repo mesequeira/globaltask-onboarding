@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Microsoft.EntityFrameworkCore;
+using Users.Application.Users.Commands.Queries;
 
 namespace Application.Users.Queries
 {
@@ -17,7 +18,7 @@ namespace Application.Users.Queries
         public async Task<PaginatedList<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
             var query = _context.Users
-                .OrderBy(u => u.Name)
+                .OrderBy(u => u.Id)
                 .Select(u => new UserDto
                 {
                     Id = u.Id,

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Application.Common.Interfaces;
 using Application.Common.Models;
+using Users.Application.Users.Commands.Queries;
 
 namespace Application.Users.Queries
 {

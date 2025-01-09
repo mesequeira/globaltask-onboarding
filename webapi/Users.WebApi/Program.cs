@@ -11,7 +11,7 @@ using Application.Users.Commands.CreateUser;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+    
 builder.Services.AddControllers()
     .AddFluentValidation(fv =>
     {
@@ -23,6 +23,7 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistence(connectionString);
 
@@ -45,6 +46,7 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations(); 
 });
 
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -53,8 +55,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
-        c.RoutePrefix = string.Empty; 
+       
     });
+
+using var scope = app.Services.CreateScope();
+
+await using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+await context.Database.MigrateAsync();
+
 }
 
 app.UseMiddleware<GlobalExceptionMiddleware>();

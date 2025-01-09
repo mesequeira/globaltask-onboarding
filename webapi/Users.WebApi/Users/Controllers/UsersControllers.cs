@@ -7,6 +7,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Users.Application.Users.Commands.Queries;
 
 namespace Users.WebApi.Controllers;
 
@@ -24,29 +25,23 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
+    public async Task<Result<int>> CreateUser([FromBody] CreateUserCommand command, CancellationToken cancellationToken)
     {
-        var command = _mapper.Map<CreateUserCommand>(request);
-        var result = await _mediator.Send(command, cancellationToken);
-        return Ok(new { message = "Usuario creado correctamente.", id = result });
+        return await _mediator.Send(command, cancellationToken);
     }
 
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
-    {
-        var command = _mapper.Map<UpdateUserCommand>(request);
-        command.Id = id; 
 
-        await _mediator.Send(command, cancellationToken);
-        return Ok(new { message = "Usuario actualizado correctamente." });
+    [HttpPatch("{id}")]
+    public async Task<Result<Unit>> UpdateUser(int id, [FromBody] UpdateUserCommand command, CancellationToken cancellationToken)
+    {
+        return await _mediator.Send(command, cancellationToken);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
+    public async Task<Result<Unit>> DeleteUser(int id, [FromBody] DeleteUserCommand command, CancellationToken cancellationToken)
     {
-        var command = new DeleteUserCommand { Id = id };
-        await _mediator.Send(command, cancellationToken);
-        return Ok(new { message = "Usuario eliminado correctamente." });
+        //command.Id = id;
+        return await _mediator.Send(command, cancellationToken);
     }
 
     [HttpGet("{id}")]

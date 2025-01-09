@@ -1,0 +1,26 @@
+services:
+  users.webapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - ASPNETCORE_HTTPS_PORTS=443
+      - CONNECTIONSTRINGS__DEFAULTCONNECTION=${CONNECTIONSTRINGS__DEFAULTCONNECTION}
+      - LOGGING__LOGLEVEL__DEFAULT=${LOGGING__LOGLEVEL__DEFAULT}
+    ports:
+      - "8080:80"
+      - "8081:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - sqlserver
+  sqlserver:
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: YourStrongPassword123
+    volumes:
+      - ${APPDATA}/Microsoft/SQLServer/data:/var/opt/mssql/data
+      - ${APPDATA}/Microsoft/SQLServer/log:/var/opt/mssql/log
+      - ${APPDATA}/Microsoft/SQLServer/secrets:/var/opt/mssql/secrets

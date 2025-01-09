@@ -1,35 +1,28 @@
 ﻿using Application.Users.Commands.CreateUser;
 using Application.Common.Interfaces;
-using Moq;
 using Xunit;
+using System.Threading;
+using System.Threading.Tasks;
+using Users.Domain.Users.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Users.Application.Tests.Handlers
 {
-    public class CreateUserCommandHandlerTests
+    public class CreateUserCommandHandlerTests : IDisposable
     {
-        private readonly Mock<IApplicationDbContext> _mockDbContext;
+        private readonly IApplicationDbContext _context;
         private readonly CreateUserCommandHandler _handler;
 
         public CreateUserCommandHandlerTests()
         {
-            // Inicializa el Mock del DbContext
-            _mockDbContext = new Mock<IApplicationDbContext>();
-
-            // Configura el comportamiento del método Add para simular la asignación de un ID
-            _mockDbContext.Setup(x => x.Users.Add(It.IsAny<Users.Domain.Users.Models.User>()))
-                .Callback<Users.Domain.Users.Models.User>(u => u.Id = 1);
-
-            // Configura SaveChangesAsync para simular que guarda correctamente y retorna 1
-            _mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-            // Inicializa el handler con el Mock inyectado
-            _handler = new CreateUserCommandHandler(_mockDbContext.Object);
+            _context = InMemoryDbContextFactory.Create();
+            _handler = new CreateUserCommandHandler(_context);
         }
 
         [Fact]
         public async Task Handle_Should_CreateUser_Successfully()
         {
-            // Arrange
             var command = new CreateUserCommand
             {
                 Name = "Test User",
@@ -38,40 +31,38 @@ namespace Users.Application.Tests.Handlers
                 Birthday = new DateTime(2000, 1, 1)
             };
 
-            // Act
             var result = await _handler.Handle(command, default);
 
-            // Assert
-            _mockDbContext.Verify(x => x.Users.Add(It.IsAny<Users.Domain.Users.Models.User>()), Times.Once);
-            _mockDbContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-            Assert.True(result > 0);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(201, result.StatusCode);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == result.Value);
+            Assert.NotNull(user);
+            Assert.Equal(command.Name, user.Name);
         }
 
         [Fact]
-        public async Task Handle_Should_ThrowException_When_CommandIsNull()
+        public async Task Handle_Should_ReturnValidationError_When_CommandHasInvalidData()
         {
-            // Arrange
-            CreateUserCommand command = null;
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _handler.Handle(command, default));
-        }
-
-        [Fact]
-        public async Task Handle_Should_ThrowException_When_CommandHasInvalidData()
-        {
-            // Arrange
             var command = new CreateUserCommand
             {
-                Name = "", // Inválido
-                Email = "invalid-email", // Inválido
-                PhoneNumber = "123", // Inválido
+                Name = "",
+                Email = "invalid-email",
+                PhoneNumber = "123",
                 Birthday = DateTime.Now
             };
 
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(command, default));
-            Assert.Equal("Invalid user data", exception.Message);
+            var result = await _handler.Handle(command, default);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Equal("ValidationError", result.Error.Code);
+        }
+
+        public async void Dispose()
+        {
+            _context.Users.RemoveRange(_context.Users);
+            await _context.SaveChangesAsync();
         }
     }
 }

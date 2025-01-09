@@ -1,56 +1,54 @@
 ﻿using Application.Users.Commands.DeleteUser;
 using Application.Common.Interfaces;
-using Moq;
 using Xunit;
 using System.Threading;
 using System.Threading.Tasks;
+using Users.Domain.Users.Models;
 using System;
 
 namespace Users.Application.Tests.Handlers
 {
-    public class DeleteUserCommandHandlerTests
+    public class DeleteUserCommandHandlerTests : IDisposable
     {
-        private readonly Mock<IApplicationDbContext> _mockDbContext;
+        private readonly IApplicationDbContext _context;
         private readonly DeleteUserCommandHandler _handler;
 
         public DeleteUserCommandHandlerTests()
         {
-            _mockDbContext = new Mock<IApplicationDbContext>();
-            _handler = new DeleteUserCommandHandler(_mockDbContext.Object);
+            _context = InMemoryDbContextFactory.Create();
+            _handler = new DeleteUserCommandHandler(_context);
         }
 
         [Fact]
         public async Task Handle_Should_DeleteUser_Successfully()
         {
-            // Arrange
-            var command = new DeleteUserCommand { Id = 1 };
-            var user = new Users.Domain.Users.Models.User { Id = 1 };
+            var user = new User { Name = "User to Delete" };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-            _mockDbContext.Setup(x => x.Users.FindAsync(new object[] { command.Id }, It.IsAny<CancellationToken>()))
-                          .ReturnsAsync(user);
+            var command = new DeleteUserCommand { Id = user.Id };
 
-            _mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                          .ReturnsAsync(1);
+            var result = await _handler.Handle(command, default);
 
-            // Act
-            await _handler.Handle(command, default);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(200, result.StatusCode);
 
-            // Assert
-            _mockDbContext.Verify(x => x.Users.Remove(user), Times.Once);
-            _mockDbContext.Verify(x => x.SaveChangesAsync(default), Times.Once);
+            var deletedUser = await _context.Users.FindAsync(user.Id);
+            Assert.Null(deletedUser);
         }
 
         [Fact]
         public async Task Handle_Should_Throw_KeyNotFoundException_When_UserDoesNotExist()
         {
-            // Arrange
             var command = new DeleteUserCommand { Id = 99 };
 
-            _mockDbContext.Setup(x => x.Users.FindAsync(new object[] { command.Id }, It.IsAny<CancellationToken>()))
-                          .ReturnsAsync((Users.Domain.Users.Models.User)null);
-
-            // Act & Assert
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _handler.Handle(command, default));
+        }
+
+        public async void Dispose()
+        {
+            _context.Users.RemoveRange(_context.Users);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Application.Common.Interfaces;
+using Application.Common.Models;
 using Users.Domain.Users.Models;
 
 namespace Application.Users.Commands.CreateUser;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<int>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -13,13 +14,17 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         _context = context;
     }
 
-    public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         if (request == null)
-            throw new ArgumentNullException(nameof(request));
-
-        if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email))
-            throw new ArgumentException("Invalid user data");
+        {
+            return Result<int>.Failure(
+                code: "BadRequest",
+                description: "La solicitud no puede ser nula.",
+                type: "Validation",
+                statusCode: 400
+            );
+        }
 
         var user = new User
         {
@@ -34,6 +39,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         _context.Users.Add(user);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return user.Id;
+        return Result<int>.Success(user.Id, 201, "Usuario creado correctamente.");
     }
 }

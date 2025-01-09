@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using Application.Common.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ namespace Application.Behaviors
 {
     public class ExceptionHandlerBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
+        where TResponse : Result<object>, new() 
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
@@ -17,21 +18,42 @@ namespace Application.Behaviors
             {
                 return await next();
             }
-            catch (FluentValidation.ValidationException ex)
+            catch (ValidationException ex)
             {
-               
-                var distinctErrors = ex.Errors
+                var errors = ex.Errors
                     .GroupBy(e => e.PropertyName)
-                    .Select(g => new { Property = g.Key, Messages = g.Select(e => e.ErrorMessage).Distinct() });
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(e => e.ErrorMessage).Distinct().ToArray()
+                    );
 
-                var detailMessage = string.Join(", ", distinctErrors.SelectMany(e => e.Messages));
-                throw new ApplicationException($"Errores de validación: {detailMessage}");
+                return new TResponse
+                {
+                    IsSuccess = false,
+                    StatusCode = 400,
+                    Error = new ErrorDetails
+                    {
+                        Code = "ValidationError",
+                        Description = "Errores de validación en la solicitud.",
+                        Type = "Validation",
+                    },
+                    Message = string.Join(", ", errors.SelectMany(e => e.Value))
+                };
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Ocurrió un error inesperado", ex);
+                return new TResponse
+                {
+                    IsSuccess = false,
+                    StatusCode = 500,
+                    Error = new ErrorDetails
+                    {
+                        Code = "InternalServerError",
+                        Description = ex.Message,
+                        Type = "Exception",
+                    }
+                };
             }
         }
     }
-
 }
