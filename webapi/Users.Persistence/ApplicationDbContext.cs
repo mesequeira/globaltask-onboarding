@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Users.Domain.Users.Models;
 
-namespace Users.Infrastructure
+namespace Users.Persistence
 {
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
@@ -31,7 +31,7 @@ namespace Users.Infrastructure
                       .HasColumnType("VARCHAR(20)");
 
                 entity.Property(e => e.Birthday)
-                      .HasColumnType("DATE") 
+                      .HasColumnType("DATE")
                       .IsRequired();
 
                 entity.Property(e => e.CreatedAt)

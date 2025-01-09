@@ -2,7 +2,6 @@
 using Application.Common.Models;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.UpdateUser;
-using Application.Users.Services;
 using Microsoft.EntityFrameworkCore;
 using Users.Domain.Users.Models;
 using System.Collections.Generic;
@@ -10,14 +9,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Users.Queries;
+using Users.Persistence.Repositories.Interfaces;
 
-namespace Users.Infrastructure.Services
+namespace Users.Persistence.Repositories
 {
-    public class UserService : IUserService
+    public class UserRepository : IUserRepository
     {
         private readonly IApplicationDbContext _context;
 
-        public UserService(IApplicationDbContext context)
+        public UserRepository(IApplicationDbContext context)
         {
             _context = context;
         }

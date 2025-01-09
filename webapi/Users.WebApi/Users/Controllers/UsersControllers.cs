@@ -1,9 +1,10 @@
 ﻿using Application.Common.Models;
 using Application.Users.Commands.CreateUser;
+using Application.Users.Commands.DeleteUser;
 using Application.Users.Commands.UpdateUser;
 using Application.Users.Queries;
-using Application.Users.Services;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,80 +14,54 @@ namespace Users.WebApi.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _userService;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public UsersController(IUserService userService, IMapper mapper)
+    public UsersController(IMapper mapper, IMediator mediator)
     {
-        _userService = userService;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
         var command = _mapper.Map<CreateUserCommand>(request);
-
-        var validator = new CreateUserCommandValidator();
-        var validationResult = validator.Validate(command);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
-        var userId = await _userService.CreateUserAsync(command, cancellationToken);
-        return Ok(Result<int>.Success(userId, StatusCodes.Status201Created, "Usuario creado exitosamente."));
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(new { message = "Usuario creado correctamente.", id = result });
     }
 
     [HttpPatch("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateUserCommand
-        {
-            Id = id,
-            Name = request.Name,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            Birthday = request.Birthday
-        };
+        var command = _mapper.Map<UpdateUserCommand>(request);
+        command.Id = id; 
 
-        var validator = new UpdateUserCommandValidator();
-        var validationResult = validator.Validate(command);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(new
-            {
-                message = "Errores de validación.",
-                errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
-            });
-        }
-
-        await _userService.UpdateUserAsync(command, cancellationToken);
-
+        await _mediator.Send(command, cancellationToken);
         return Ok(new { message = "Usuario actualizado correctamente." });
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        await _userService.DeleteUserAsync(id, cancellationToken);
-
+        var command = new DeleteUserCommand { Id = id };
+        await _mediator.Send(command, cancellationToken);
         return Ok(new { message = "Usuario eliminado correctamente." });
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(int id, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetUserByIdAsync(id, cancellationToken);
+        var query = new GetUserByIdQuery { Id = id };
+        var user = await _mediator.Send(query, cancellationToken);
         return Ok(Result<UserDto>.Success(user, StatusCodes.Status200OK));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken, int page = 1, int pageSize = 25)
     {
-        var users = await _userService.GetAllUsersAsync(page, pageSize, cancellationToken);
+        var query = new GetAllUsersQuery { Page = page, PageSize = pageSize };
+        var users = await _mediator.Send(query, cancellationToken);
         return Ok(Result<PaginatedList<UserDto>>.Success(users, StatusCodes.Status200OK));
     }
 }

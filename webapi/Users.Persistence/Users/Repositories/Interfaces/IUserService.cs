@@ -3,9 +3,9 @@ using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.UpdateUser;
 using Application.Users.Queries;
 
-namespace Application.Users.Services;
+namespace Users.Persistence.Repositories.Interfaces;
 
-public interface IUserService
+public interface IUserRepository
 {
     Task<int> CreateUserAsync(CreateUserCommand command, CancellationToken cancellationToken);
     Task UpdateUserAsync(UpdateUserCommand command, CancellationToken cancellationToken);

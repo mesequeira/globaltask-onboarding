@@ -23,15 +23,13 @@ namespace Application.Users.Commands.CreateUser
                 .Must(BeAtLeast18)
                 .WithMessage("El usuario debe ser mayor de 18 años.");
         }
-        private bool BeAtLeast18(DateTime birthday)
-        {
-            var today = DateTime.UtcNow.Date; 
-            var age = today.Year - birthday.Year;
-            if (birthday > today.AddYears(-age))
-            {
-                age--;
-            }
 
+        private bool BeAtLeast18(DateTime birthDate)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age))
+                age--;
             return age >= 18;
         }
 

@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  users-webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: users-webapi
+    ports:
+      - 5000:5000
+    environment:
+      - CONNECTIONSTRINGS__DEFAULTCONNECTION=${CONNECTIONSTRINGS__DEFAULTCONNECTION}
+      - LOGGING__LOGLEVEL__DEFAULT=${LOGGING__LOGLEVEL__DEFAULT}
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: YourStrongPassword123
+
+volumes:
+  sqlserver_data: null
