@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Users.Worker.Application\Users.Worker.Application.csproj" />
+    <ProjectReference Include="..\Users.Worker.Infrastructure\Users.Worker.Infrastructure.csproj" />
+    <ProjectReference Include="..\Users.Worker.Persistence\Users.Worker.Persistence.csproj" />
   </ItemGroup>
 </Project>

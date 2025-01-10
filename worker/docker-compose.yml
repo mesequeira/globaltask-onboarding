@@ -1,0 +1,57 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - app_network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: users_worker
+    depends_on:
+      - rabbitmq
+    env_file:
+      - .env
+    networks:
+      - app_network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: YourStrongPassword123
+    volumes:
+      - ${APPDATA}/Microsoft/SQLServer/data:/var/opt/mssql/data
+      - ${APPDATA}/Microsoft/SQLServer/log:/var/opt/mssql/log
+      - ${APPDATA}/Microsoft/SQLServer/secrets:/var/opt/mssql/secrets
+    networks:
+      - app_network
+
+  webapi:
+    build:
+      context: ../webapi
+      dockerfile: Users.WebApi/Dockerfile
+    container_name: users_webapi
+    depends_on:
+      - sqlserver
+    ports:
+      - 8080:80
+    env_file:
+      - .env
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

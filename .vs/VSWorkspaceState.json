@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\worker",
+    "\\worker\\Users.Worker"
   ],
-  "SelectedNode": "\\Users.Management.sln",
+  "SelectedNode": "\\worker\\Users.Worker\\Users.Worker.csproj",
   "PreviewInSolutionExplorer": false
 }
