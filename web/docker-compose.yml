@@ -1,0 +1,6 @@
+services:
+  users.web:
+    image: ${DOCKER_REGISTRY-}usersweb
+    build:
+      context: .
+      dockerfile: Users.Web/Dockerfile
