@@ -16,6 +16,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
     public async Task<Result<int>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+
         if (request == null)
         {
             return Result<int>.Failure(

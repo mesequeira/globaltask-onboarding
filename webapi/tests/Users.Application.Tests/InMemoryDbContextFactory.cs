@@ -11,7 +11,6 @@ public static class InMemoryDbContextFactory
             .Options;
 
         var context = new ApplicationDbContext(options);
-
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 

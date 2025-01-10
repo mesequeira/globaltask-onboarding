@@ -27,6 +27,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
                 statusCode: 404
             );
         }
+        user.Name = request.Name;
+        user.Email = request.Email;
         user.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

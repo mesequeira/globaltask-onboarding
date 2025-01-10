@@ -1,68 +1,70 @@
-﻿using Application.Users.Commands.CreateUser;
+﻿using Application.Behaviors;
 using Application.Common.Interfaces;
-using Xunit;
-using System.Threading;
-using System.Threading.Tasks;
-using Users.Domain.Users.Models;
+using Application.Common.Models;
+using Application.Users.Commands.CreateUser;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using System;
 
-namespace Users.Application.Tests.Handlers
+public class CreateUserCommandHandlerTests : IDisposable
 {
-    public class CreateUserCommandHandlerTests : IDisposable
+    private readonly IApplicationDbContext _context;
+    private readonly CreateUserCommandHandler _handler;
+    private readonly IValidator<CreateUserCommand> _validator;
+
+    public CreateUserCommandHandlerTests()
     {
-        private readonly IApplicationDbContext _context;
-        private readonly CreateUserCommandHandler _handler;
+        _context = InMemoryDbContextFactory.Create();
+        _validator = new CreateUserCommandValidator(); 
+        _handler = new CreateUserCommandHandler(_context);
+        var dbContext = (DbContext)_context;
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+    }
 
-        public CreateUserCommandHandlerTests()
+    [Fact]
+    public async Task Handle_Should_CreateUser_Successfully()
+    {
+        var command = new CreateUserCommand
         {
-            _context = InMemoryDbContextFactory.Create();
-            _handler = new CreateUserCommandHandler(_context);
-        }
+            Name = "Test User",
+            Email = "test@example.com",
+            PhoneNumber = "123456789",
+            Birthday = new DateTime(2000, 1, 1)
+        };
 
-        [Fact]
-        public async Task Handle_Should_CreateUser_Successfully()
+        var result = await _handler.Handle(command, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(201, result.StatusCode);
+        Assert.Equal("Usuario creado correctamente.", result.Message);
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == result.Value);
+        Assert.NotNull(user);
+        Assert.Equal(command.Name, user.Name);
+    }
+
+    [Fact]
+    public async Task Handle_Should_ThrowValidationException_When_ValidationFails()
+    {
+        var command = new CreateUserCommand
         {
-            var command = new CreateUserCommand
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                PhoneNumber = "123456789",
-                Birthday = new DateTime(2000, 1, 1)
-            };
+            Name = "",
+            Email = "invalid-email",
+            PhoneNumber = "123",
+            Birthday = DateTime.Now
+        };
 
-            var result = await _handler.Handle(command, default);
+        var validationBehavior = new ValidationBehavior<CreateUserCommand, Result<int>>(new[] { _validator });
 
-            Assert.True(result.IsSuccess);
-            Assert.Equal(201, result.StatusCode);
+        await Assert.ThrowsAsync<ValidationException>(() => validationBehavior.Handle(
+            command,
+            () => _handler.Handle(command, default),
+            default
+        ));
+    }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == result.Value);
-            Assert.NotNull(user);
-            Assert.Equal(command.Name, user.Name);
-        }
-
-        [Fact]
-        public async Task Handle_Should_ReturnValidationError_When_CommandHasInvalidData()
-        {
-            var command = new CreateUserCommand
-            {
-                Name = "",
-                Email = "invalid-email",
-                PhoneNumber = "123",
-                Birthday = DateTime.Now
-            };
-
-            var result = await _handler.Handle(command, default);
-
-            Assert.False(result.IsSuccess);
-            Assert.Equal(400, result.StatusCode);
-            Assert.Equal("ValidationError", result.Error.Code);
-        }
-
-        public async void Dispose()
-        {
-            _context.Users.RemoveRange(_context.Users);
-            await _context.SaveChangesAsync();
-        }
+    public void Dispose()
+    {
+        _context?.Dispose();
     }
 }
