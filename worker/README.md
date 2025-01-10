@@ -84,11 +84,9 @@ Se deberá continuar con la misma lógica de referencias de proyectos y estructu
 
 **Tarea 2:** Dockerizar el proyecto de `Worker` y crear un `docker-compose.yml` encargado de levantar el servicio de Worker y `RabbitMQ`.
 
-**Tarea 3:** Copiar y pegar todo lo relacionado a la persistencia de la entidad `User.cs` generado en el proyecto de `WebApi`, respetando el posicionamiento en las mismas capas.
+**Tarea 3:** Para la base de datos, utilizar la misma generada en el proyecto de `WebApi` investigando cómo conectar dos contenedores de Docker distintos mediante `networks`.
 
-**Tarea 4:** Para la base de datos, utilizar la misma generada en el proyecto de `WebApi` investigando cómo conectar dos contenedores de Docker distintos mediante `networks`.
-
-**Tarea 5:** Investigar e implementar MassTransit junto a RabbitMQ en el proyecto. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
+**Tarea 4:** Investigar e implementar MassTransit junto a RabbitMQ en el proyecto. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
 
 > Para más información al respecto, se puede visitar el siguiente vídeo: [Getting Started With MassTransit (Beginner Friendly)](https://youtu.be/CTKWFMZVIWA)
 
@@ -101,31 +99,30 @@ RabbitMQ funciona como un broker de mensajería en el que exista un `Publisher` 
 
 Por lo que, será necesario configurar nuestra WebApi como un publicador de mensajes.
 
-**Tarea 6:** Configurar nuestra [WebApi](../webapi/) con RabbitMQ y MassTransit para que pueda publicar eventos. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
+**Tarea 5:** Configurar nuestra [WebApi](../webapi/) con RabbitMQ y MassTransit para que pueda publicar eventos. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
 
-**Tarea 7:** Crear un primer evento en el proyecto `Domain` de nuestro Worker y WebApi llamado `UserRegisteredEvent.cs`. Luego, hacer que nuestro WebApi publique este evento a la hora de crear un usuario y crear un `Consumer` llamado `UserRegisteredEventConsumer.cs` en nuestro Worker encargado de manejar y consumir este evento.
+**Tarea 6:** Crear un primer evento en el proyecto `Domain` de nuestro Worker y WebApi llamado `UserRegisteredEvent.cs`. Luego, hacer que nuestro WebApi publique este evento a la hora de crear un usuario y crear un `Consumer` llamado `UserRegisteredEventConsumer.cs` en nuestro Worker encargado de manejar y consumir este evento.
 
 ## Enviar notificaciones mediante correo electrónico
 
 Dentro de nuestro servicios manejamos distintas notificaciones: push notifications, correo electrónicos, entre otros. Para esto, normalmente se utiliza un servicio de SMTP propio que las compañías contratan, pero Gmail nos ofrece una versión gratuita de esto que podemos implementar. 
 
-**Tarea 8:** Investigar e implementar un servicio que permita enviar correos electrónicos con Gmail. Pueden crear una cuenta de gmail aparte para no utilizar una personal.
+**Tarea 7:** Investigar e implementar un servicio que permita enviar correos electrónicos con Gmail. Pueden crear una cuenta de gmail aparte para no utilizar una personal.
 
 > Para más información al respecto, se puede visitar el siguiente vídeo: [Easy Email Verification in .NET: FluentEmail + Papercut](https://youtu.be/KtCjH-1iCIk)
 
-**Tarea 9:** Implementar dentro del consumer `UserRegisteredEventConsumer.cs` una lógica que consuma el servicio de envio de correo electrónico y envíe una notificación de bienvenida.
+**Tarea 8:** Implementar dentro del consumer `UserRegisteredEventConsumer.cs` una lógica que consuma el servicio de envio de correo electrónico y envíe una notificación de bienvenida.
 
-**Tarea 10:** Crear dos eventos nuevos en el proyecto `Domain` de nuestra WebApi y Worker `UserUpdatedEvent.cs` y `UserDeletedEvent.cs` junto a los 2 consumers en el worker `UserUpdatedEventConsumer.cs` y `UserDeletedEventConsumer.cs`.
+**Tarea 9:** Crear dos eventos nuevos en el proyecto `Domain` de nuestra WebApi y Worker `UserUpdatedEvent.cs` y `UserDeletedEvent.cs` junto a los 2 consumers en el worker `UserUpdatedEventConsumer.cs` y `UserDeletedEventConsumer.cs`.
 
-**Tarea 11:** En el `UserUpdatedEventConsumer.cs` enviar una notificación que permita saber qué campos se modificaron del usuario, mostrando los valores viejos y los nuevos.
+**Tarea 10:** En el `UserUpdatedEventConsumer.cs` enviar una notificación que permita saber qué campos se modificaron del usuario, mostrando los valores viejos y los nuevos.
 
-**Tarea 12:** En el `UserDeletedEventConsumer.cs` enviar una notificación que avise sobre la eliminación del usuario junto a un motivo de por qué fue borrado. Para esto, habrá que agregar un campo en el endpoint de la WebApi, que se encarga de eliminar el usuario, para que se pueda cargar un motivo.
+**Tarea 11:** En el `UserDeletedEventConsumer.cs` enviar una notificación que avise sobre la eliminación del usuario junto a un motivo de por qué fue borrado. Para esto, habrá que agregar un campo en el endpoint de la WebApi, que se encarga de eliminar el usuario, para que se pueda cargar un motivo.
 
 # Glosario de tareas
 
 * [ ] Configurar las referencias entre proyectos, siguiendo las reglas de la Clean Architecture y responsabilidad de las capas.
 * [ ]  Dockerizar el proyecto de `Worker` y crear un `docker-compose.yml` encargado de levantar el servicio de Worker y `RabbitMQ`.
-* [ ]  Copiar y pegar todo lo relacionado a la persistencia de la entidad `User.cs` generado en el proyecto de `WebApi`, respetando el posicionamiento en las mismas capas.
 * [ ]  Para la base de datos, utilizar la misma generada en el proyecto de `WebApi` investigando cómo conectar dos contenedores de Docker distintos mediante `networks`.
 * [ ]  Investigar e implementar MassTransit junto a RabbitMQ en el proyecto. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
 * [ ]  Configurar nuestra [WebApi](../webapi/) con RabbitMQ y MassTransit para que pueda publicar eventos. Contemplar que RabbitMQ y MassTransit pueden ser considerados servicios externos, por lo que su configuración e inyección debe estar en los proyectos correctos.
