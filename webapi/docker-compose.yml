@@ -1,6 +1,7 @@
 services:
   users.webapi:
     image: ${DOCKER_REGISTRY-}userswebapi
+    container_name: users.webapi
     ports:
       - "5000:8080"
       - "5001:8081"
@@ -12,6 +13,9 @@ services:
         - MESSAGE_BROKER_HOST=${MESSAGE_BROKER_HOST}
         - MESSAGE_BROKER_USERNAME=${MESSAGE_BROKER_USERNAME} 
         - MESSAGE_BROKER_PASSWORD=${MESSAGE_BROKER_PASSWORD} 
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_HTTP_PORTS=8080
+        - ASPNETCORE_HTTPS_PORTS=8081
     depends_on: 
         - users.database
     networks:

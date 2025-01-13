@@ -1,4 +1,4 @@
-﻿namespace Users.Application.Users.Dtos;
+﻿namespace Users.Web.Domain.Users;
 
 public sealed class UserResponseDto
 {

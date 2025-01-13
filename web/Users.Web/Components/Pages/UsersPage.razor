@@ -1,0 +1,36 @@
+﻿@page "/users"
+@using Users.Web.Domain.Users
+
+<PageTitle>Users</PageTitle>
+
+<div>
+    <MudTable T="UserResponseDto" Items="@UserList">
+        <HeaderContent>
+            <MudTh>UserName</MudTh>
+            <MudTh>Edad</MudTh>
+            <MudTh>Correo</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="UserName">@context.UserName</MudTd>
+            <MudTd DataLabel="Edad">@context.Birthday</MudTd>
+            <MudTd DataLabel="Correo">@context.Email</MudTd>
+            <MudTd>
+                <MudTooltip 
+                    Placement="Placement.Left" 
+                    ShowOnClick="true" 
+                    ShowOnHover="false" 
+                    Style="background-color: transparent"
+                >
+                    <ChildContent>...</ChildContent>
+                    <TooltipContent>
+                        <MudPaper Height="100px" Class="pa-2 d-flex flex-column justify-space-between">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary">Editar</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary">Eliminar</MudButton>
+                        </MudPaper>
+                    </TooltipContent>
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
