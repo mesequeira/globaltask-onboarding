@@ -12,6 +12,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A38A7BB0-30E7-49EB-BBA2-804F6D10DA76}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		compose.yaml = compose.yaml
+		.env = .env
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Worker", "Worker", "{F0B8EA62-2CC4-41ED-8FF9-646F288482DD}"

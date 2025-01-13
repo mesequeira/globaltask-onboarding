@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Users\Consumers\" />
+    <Folder Include="Users\Profiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Users.Worker.Domain\Users.Worker.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

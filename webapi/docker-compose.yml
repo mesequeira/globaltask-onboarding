@@ -10,7 +10,9 @@
       - sqlpreview
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=${BD_HOST_MSSQL},${DB_PORT};Database=${DB_DATABASE};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=sqlpreview,1433;Database=${DB_DATABASE};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+    networks:
+      - external_network  # <-- Se conecta a la red externa
 
   sqlpreview:
     image: mcr.microsoft.com/mssql/server:latest
@@ -24,7 +26,14 @@
       - MSSQL_PID=${MSSQL_PID}
     volumes:
       - sql_data:/var/opt/mssql
+    networks:
+      - external_network  # <-- Se conecta a la red externa
 
 volumes:
   sql_data:
     driver: local
+
+networks:
+  external_network:
+    name: my_external_network  # Nombre real de la red
+    external: true

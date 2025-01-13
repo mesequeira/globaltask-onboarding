@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Users\Configurations\" />
+    <Folder Include="Users\Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Users.Worker.Application\Users.Worker.Application.csproj" />
+    <ProjectReference Include="..\Users.Worker.Domain\Users.Worker.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
