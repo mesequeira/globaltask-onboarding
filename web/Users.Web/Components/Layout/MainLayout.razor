@@ -10,7 +10,21 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
+<MessagesProvider />
+
+<MudLayout>
+    <MudDrawer Open="true" Anchor="Anchor.Left" Elevation="1" Class="mud-theme-dark">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Blazor Onboarding</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
 @Body
+</MudLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.

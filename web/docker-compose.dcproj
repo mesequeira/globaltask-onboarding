@@ -20,6 +20,11 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Users.Web\Components\Components\Dialogs\ConfirmDialog.razor.cs" />
+    <None Include="Users.Web\Components\Components\Dialogs\FormDialog.razor.cs" />
+    <None Include="Users.Web\Components\Components\Forms\CreateUserForm.razor.cs" />
+    <None Include="Users.Web\Components\Components\Forms\EditUserForm.razor.cs" />
     <None Include="Users.Web\Components\Pages\Users.razor.cs" />
+    <None Include="Users.Web\Components\Providers\MessagesProvider.razor.cs" />
   </ItemGroup>
 </Project>

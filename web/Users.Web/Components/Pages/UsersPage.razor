@@ -1,36 +1,53 @@
 ﻿@page "/users"
 @using Users.Web.Domain.Users
+@inherits FluxorComponent
 
 <PageTitle>Users</PageTitle>
 
-<div>
-    <MudTable T="UserResponseDto" Items="@UserList">
-        <HeaderContent>
-            <MudTh>UserName</MudTh>
-            <MudTh>Edad</MudTh>
-            <MudTh>Correo</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="UserName">@context.UserName</MudTd>
-            <MudTd DataLabel="Edad">@context.Birthday</MudTd>
-            <MudTd DataLabel="Correo">@context.Email</MudTd>
-            <MudTd>
-                <MudTooltip 
-                    Placement="Placement.Left" 
-                    ShowOnClick="true" 
-                    ShowOnHover="false" 
-                    Style="background-color: transparent"
-                >
-                    <ChildContent>...</ChildContent>
-                    <TooltipContent>
-                        <MudPaper Height="100px" Class="pa-2 d-flex flex-column justify-space-between">
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary">Editar</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Secondary">Eliminar</MudButton>
-                        </MudPaper>
-                    </TooltipContent>
-                </MudTooltip>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
-</div>
+<MudMainContent>
+@if(State.Value.IsLoading)
+{
+    <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudContainer>
+}
+else 
+{
+    <MudContainer>
+        <MudPaper Width="40%" Class="ma-4 ml-auto" Elevation="0">
+            <MudButton FullWidth="true" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleCrate">Crear</MudButton>
+        </MudPaper>
+
+        <MudTable T="UserResponseDto" Items="@State.Value.Users">
+            <HeaderContent>
+                <MudTh>UserName</MudTh>
+                <MudTh>Edad</MudTh>
+                <MudTh>Correo</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="UserName">@context.UserName</MudTd>
+                <MudTd DataLabel="Edad">@context.Birthday</MudTd>
+                <MudTd DataLabel="Correo">@context.Email</MudTd>
+                <MudTd>
+                    <MudTooltip Placement="Placement.Left"
+                                ShowOnFocus="false"
+                                ShowOnClick="true"
+                                ShowOnHover="false"
+                                @ref="_toolTip"
+                                Style="background-color: transparent">
+                        <ChildContent>...</ChildContent>
+                        <TooltipContent>
+                            <MudPaper Height="100px" Class="pa-2 d-flex flex-column justify-space-between">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="async ()=> await HandleUpdate(context.Id)">Editar</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="async () => await HandleDelete(context.Id)">Eliminar</MudButton>
+                            </MudPaper>
+                        </TooltipContent>
+                    </MudTooltip>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudContainer>
+}
+</MudMainContent>
+
 

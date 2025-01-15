@@ -1,0 +1,24 @@
+﻿<MudForm @ref="_form" Model="FormModel" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+    <MudTextField InputType="InputType.Password"
+                  Label="Contraseña"
+                  @bind-Value="FormModel.Password"
+                  For="@(() => FormModel.Password)" />
+    <MudTextField InputType="InputType.Text"
+                  Label="Email"
+                  @bind-Value="FormModel.Email"
+                  For="@(() => FormModel.Email)" />
+    <MudTextField InputType="InputType.Telephone"
+                  Label="Teléfono"
+                  @bind-Value="FormModel.PhoneNumber"
+                  For="@(() => FormModel.PhoneNumber)" />
+    <div class="d-flex align-center justify-space-between">
+        <MudButton 
+            Variant="Variant.Filled" 
+            Color="Color.Primary" 
+            Class="ml-auto mt-2"
+            OnClick="HandleSubmit"
+        >
+            Submit
+        </MudButton>
+    </div>
+</MudForm>

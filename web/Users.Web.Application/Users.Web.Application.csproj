@@ -7,6 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+      <PackageReference Include="Fluxor.Blazor.Web" Version="6.5.2" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Users.Web.Domain\Users.Web.Domain.csproj" />
     </ItemGroup>
 
