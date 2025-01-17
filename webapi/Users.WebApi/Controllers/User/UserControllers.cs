@@ -50,14 +50,14 @@ public class UsersController : ControllerBase
             return BadRequest(result.CreateResponseObject());
         }
         
-        var userRegisteredEvent = new UserRegisteredEvent
-        (
-            result.Value,
-            command.Name,
-            command.Email
-        );
-
-        await _publishEndpoint.Publish(userRegisteredEvent);
+        // var userRegisteredEvent = new UserRegisteredEvent
+        // (
+        //     result.Value,
+        //     command.Name,
+        //     command.Email
+        // );
+        //
+        // await _publishEndpoint.Publish(userRegisteredEvent);
         
         return CreatedAtAction(
             nameof(GetById), 
@@ -130,13 +130,13 @@ public class UsersController : ControllerBase
         // Enviar el comando al mediador
         var result = await _mediator.Send(updatedCommand);
         
-        var userUpdatedEvent = new UserUpdatedEvent
-        (
-            command.Email,
-            new Dictionary<string, FieldChange>()
-        );
-
-        await _publishEndpoint.Publish(userUpdatedEvent);
+        // var userUpdatedEvent = new UserUpdatedEvent
+        // (
+        //     command.Email,
+        //     new Dictionary<string, FieldChange>()
+        // );
+        //
+        // await _publishEndpoint.Publish(userUpdatedEvent);
 
         // Manejar el resultado según el código de estado
         return result.StatusCode switch
@@ -160,13 +160,13 @@ public class UsersController : ControllerBase
         var command = new DeleteUserCommand(id);
         var result = await _mediator.Send(command);
 
-        var userDeletedEvent = new UserDeletedEvent
-        (
-            command.Email,
-            new Dictionary<string, FieldChange>()
-        );
-
-        await _publishEndpoint.Publish(userDeletedEvent);
+        // var userDeletedEvent = new UserDeletedEvent
+        // (
+        //     command.Email,
+        //     new Dictionary<string, FieldChange>()
+        // );
+        //
+        // await _publishEndpoint.Publish(userDeletedEvent);
         
         return result.StatusCode switch
         {

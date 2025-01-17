@@ -1,10 +1,13 @@
 ﻿// Application/Users/Commands/UpdateUser/UpdateUserCommandHandler.cs
 
 using MediatR;
+using Users.Application.Abstractions;
 using Users.Application.Errors.User;
 using Users.Domain.Abstractions;
 using Users.Domain.Interfaces;
 using Users.Domain.Models;
+using Users.Worker.Application.Users.Events;
+using Users.Worker.Domain.Abstractions;
 
 namespace Users.Application.Users.Commands.UpdateUser;
 
@@ -12,11 +15,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEventBus _eventBus;
 
-    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IEventBus eventBus)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _eventBus = eventBus;
     }
 
     public async Task<Result<int>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -39,7 +44,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
         await _userRepository.Update(existingUser);
         
         await _unitOfWork.SaveChangesAsync();
+        
+        await _eventBus.PublishAsync(new UserUpdatedEvent(request.Email, new Dictionary<string, FieldChange>()));
 
-        return Result<int>.Sucess(existingUser.Id, 204);;
+        return Result<int>.Sucess(existingUser.Id, 204);
     }
 }

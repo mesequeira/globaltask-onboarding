@@ -3,9 +3,11 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Filters;
+using Users.Application.Abstractions;
 using Users.Application.Users.Commands.CreateUser;
 using Users.Application.Users.Events;
 using Users.Domain.Interfaces;
+using Users.Infrastructure.MessageBroker;
 using Users.Infrastructure.Persistence;
 using Users.Persistence;
 using Users.WebApi.Controllers.User.Examples;
@@ -64,6 +66,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Creat
 // Registrar el Repositorio y UnitOfWork
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IEventBus, EventBus>();
 
 // Agregar servicios de Swagger
 builder.Services.AddEndpointsApiExplorer();

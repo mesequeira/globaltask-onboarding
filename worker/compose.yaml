@@ -1,0 +1,40 @@
+﻿services:
+  users.worker:
+    image: users.worker
+    container_name: Worker
+    build:
+      context: .
+      dockerfile: Users.Worker/Dockerfile
+    depends_on:
+      - rabbitmq  # Para que Docker Compose inicie primero rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
+      # Ejemplo de variable de conexión a RabbitMQ (ajusta según tu aplicación)
+#      - RABBITMQ_URI=amqp://admin:admin@rabbitmq:5672
+      - ConnectionStrings__DefaultConnection=Server=sqlpreview,1433;Database=${DB_DATABASE};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+    networks:
+      - external_network
+        
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: Rabbitmq
+    hostname: worker-rabbitmq
+    ports:
+      - "5672:5672"     # Puerto de AMQP
+      - "15672:15672"   # Panel de gestión web
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+#    volumes:
+      - ./.container/queue/rabbitmq/data/:/var/lib/rabbitmq   # Volumen para datos persistentes
+      - ./.container/queue/rabbitmq/log/:/var/log/rabbitmq   # Volumen para datos persistentes
+#      - rabbitmq_log:/var/log/rabbitmq  # Volumen para logs
+    networks:
+      - external_network
+
+networks:
+  external_network:
+    name: my_external_network  # Nombre real de la red
+    external: true
+    # name: my_external_network  <-- en caso de que la red tenga un nombre distinto
