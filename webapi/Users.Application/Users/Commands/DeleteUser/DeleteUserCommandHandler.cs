@@ -2,8 +2,11 @@
 
 using MediatR;
 using Users.Application.Errors.User;
+using Users.Application.Users.Events;
 using Users.Domain.Abstractions;
 using Users.Domain.Interfaces;
+using Users.Worker.Application.Users.Events;
+using Users.Worker.Domain.Abstractions;
 
 namespace Users.Application.Users.Commands.DeleteUser;
 
@@ -23,6 +26,14 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Resul
         if (request.Id <= 0) return Result<object?>.Failure(400, UserErrors.BadParameters);
         
         var existingUser = await _userRepository.GetById(request.Id);
+        
+        var userDeleteEvent = new UserDeletedEvent()
+        (
+            command.Email,
+            new Dictionary<string, FieldChange>()
+        );
+
+        await _publishEndpoint.Publish(userUpdatedEvent);
 
         // if (existingUser == null)
         //     return Result<object>.Failure(404, UserErrors.NotFound);

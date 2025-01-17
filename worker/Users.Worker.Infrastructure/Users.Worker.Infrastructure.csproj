@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Emails\Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Users.Worker.Application\Users.Worker.Application.csproj" />
     <ProjectReference Include="..\Users.Worker.Domain\Users.Worker.Domain.csproj" />
   </ItemGroup>
