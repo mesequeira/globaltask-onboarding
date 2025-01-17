@@ -11,4 +11,9 @@
       <ProjectReference Include="..\Users.Web.Domain\Users.Web.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MudBlazor.FontIcons.MaterialSymbols" Version="1.2.0" />
+      <PackageReference Include="MudBlazor.ThemeManager" Version="2.1.0" />
+    </ItemGroup>
+
 </Project>
