@@ -1,0 +1,35 @@
+﻿@using MudBlazor
+@using Users.Web.Domain.Models
+@using Microsoft.AspNetCore.Components
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">
+            ¿Estás seguro de que deseas borrar al usuario @User.Name?
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Borrar">Borrar</MudButton>
+        <MudButton OnClick="Cancelar">Cancelar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public User User { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; }
+
+    void Borrar()
+    {
+        // Se cierra el modal retornando 'true' para confirmar el borrado.
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    void Cancelar()
+    {
+        // Se cierra el modal sin confirmar la acción.
+        MudDialog.Cancel();
+    }
+}

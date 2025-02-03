@@ -1,0 +1,61 @@
+﻿@using Users.Web.Domain.Models
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="editUser.Name" Label="Nombre" Required="true" />
+        <MudTextField @bind-Value="editUser.Email" Label="Email" Required="true" />
+        <MudTextField @bind-Value="editUser.PhoneNumber" Label="Teléfono" Required="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="GuardarAsync">Guardar</MudButton>
+        <MudButton OnClick="Cancelar">Cancelar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] 
+    public User User { get; set; }
+    
+    [Parameter] 
+    public bool OnEdit { get; set; }
+
+    [CascadingParameter] 
+    public MudDialogInstance MudDialog { get; set; }
+
+    private User editUser;
+
+    protected override void OnInitialized()
+    {
+        if (OnEdit)
+        {
+            // Se crea una copia del usuario para editar sin modificar el original hasta confirmar.
+            editUser = new User(User.Name, User.Email, User.PhoneNumber, User.BirthDate);
+        }
+        else
+        {
+            editUser = new User();
+        }
+    }
+
+    async Task GuardarAsync()
+    {
+        // Parámetros para el child modal; en este caso se envía el flag OnEdit para mostrar el mensaje adecuado.
+        var parameters = new DialogParameters { { "OnEdit", OnEdit } };
+
+        // Se muestra el modal de confirmación (UserConfirmModal).
+        var childDialog = DialogService.Show<UserConfirmModal>("Confirmación", parameters);
+        var result = await childDialog.Result;
+
+        // Si se confirma la acción en el modal hijo, se cierra el parent modal retornando el usuario editado.
+        if (!result.Canceled && result.Data is bool confirmed && confirmed)
+        {
+            MudDialog.Close(DialogResult.Ok(editUser));
+        }
+    }
+
+    void Cancelar()
+    {
+        MudDialog.Cancel();
+    }
+}

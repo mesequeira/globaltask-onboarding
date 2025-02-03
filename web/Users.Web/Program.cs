@@ -1,5 +1,7 @@
-using Users.Web.Manegement.Components;
+using Users.Web.App;
+using FluentValidation.AspNetCore;
 using MudBlazor.Services;
+using Users.Application.Users.Commands.CreateUser;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMudServices();
+
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UserValidator>());
+
 
 
 var app = builder.Build();

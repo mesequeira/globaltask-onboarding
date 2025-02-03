@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>Users.Web.Manegement</RootNamespace>
+        <RootNamespace>Users.Web</RootNamespace>
         <UserSecretsId>58521911-ae07-4f48-9fcb-7c42b0db6e98</UserSecretsId>
         <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     </PropertyGroup>
@@ -17,13 +17,28 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
       <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-      <PackageReference Include="MudBlazor" Version="7.15.0" />
+      <PackageReference Include="MudBlazor" Version="7.16.0" />
+      <PackageReference Include="MudBlazor.ThemeManager" Version="2.1.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Users.Web.Application\Users.Web.Application.csproj" />
       <ProjectReference Include="..\Users.Web.Infrastructure\Users.Web.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Pages\Users\Users.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Home.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="App\Pages\Error.razor" />
+      <AdditionalFiles Include="App\Pages\Home.razor" />
     </ItemGroup>
 
 </Project>

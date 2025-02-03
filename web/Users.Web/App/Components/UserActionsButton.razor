@@ -1,0 +1,13 @@
+﻿<MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" Variant="Variant.Filled">
+    <MudMenuItem OnClick="@(() => OnEditarUsuario.InvokeAsync())">
+        Editar Usuario
+    </MudMenuItem>
+    <MudMenuItem OnClick="@(() => OnEliminarUsuario.InvokeAsync())">
+        Eliminar Usuario
+    </MudMenuItem>
+</MudMenu>
+
+@code {
+    [Parameter] public EventCallback OnEditarUsuario { get; set; }
+    [Parameter] public EventCallback OnEliminarUsuario { get; set; }
+}

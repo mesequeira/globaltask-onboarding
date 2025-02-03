@@ -1,0 +1,96 @@
+﻿@page "/users"
+@using global::Users.Web.Domain.Models
+@using Users.Web.App.Components
+@inject IDialogService DialogService
+
+<MudText>Usuarios</MudText>
+
+<div class="d-flex justify-content-end mb-3">
+    <MudButton OnClick="@CrearUsuario">
+        Crear Usuario
+    </MudButton>
+</div>
+
+<MudTable Items="@users">
+    <HeaderContent>
+        <MudTh>Nombre</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Teléfono</MudTh>
+        <MudTh>Acciones</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Email</MudTd>
+        <MudTd>@context.PhoneNumber</MudTd>
+        <MudTd>
+            <div class="d-flex justify-content-end mb-3">
+                <UserActionsButton
+                    OnEditarUsuario="@(() => EditarUsuario(@context))"
+                    OnEliminarUsuario="@(() => EliminarUsuario(@context))" />
+            </div>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    static User test = new User("Carlos", "carlos@gmail.com", "5492214810071", DateTime.Now);
+    List<User> users;
+
+    protected override void OnInitialized()
+    {
+        users = new() { test };
+    }
+
+    async Task CrearUsuario()
+    {
+        var parameters = new DialogParameters { ["User"] = null, ["OnEdit"] = false };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<UserEditCreateModal>("Editar Usuario", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // Aquí puedes actualizar el usuario modificado.
+            User usuarioCreado = result.Data as User;
+            users.Add(usuarioCreado);
+        }
+    }
+
+    async Task EditarUsuario(User usuario)
+    {
+        var parameters = new DialogParameters { ["User"] = usuario, ["OnEdit"] = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<UserEditCreateModal>("Editar Usuario", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // Aquí puedes actualizar el usuario modificado.
+            User usuarioEditado = result.Data as User;
+            // Por ejemplo, podrías actualizar la lista:
+            int index = users.IndexOf(usuario);
+            if (index != -1)
+            {
+                users[index] = usuarioEditado;
+            }
+        }
+    }
+
+    async Task EliminarUsuario(User usuario)
+    {
+        var parameters = new DialogParameters { ["User"] = usuario };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<UserDeleteModal>("Eliminar Usuario", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            bool confirmacion = (bool)result.Data;
+            if (confirmacion)
+            {
+                // Elimina el usuario de la lista o llama a la API para eliminarlo.
+                users.Remove(usuario);
+            }
+        }
+    }
+}
