@@ -1,6 +1,8 @@
 ﻿@page "/users"
 @using global::Users.Web.Domain.Models
 @using Users.Web.App.Components
+@using Users.Web.Domain.DTO
+
 @inject IDialogService DialogService
 
 <MudText>Usuarios</MudText>
@@ -51,7 +53,8 @@
         if (!result.Canceled)
         {
             // Aquí puedes actualizar el usuario modificado.
-            User usuarioCreado = result.Data as User;
+            UserDTO usuarioDtoCreado = result.Data as UserDTO;
+            User usuarioCreado = new User(usuarioDtoCreado);
             users.Add(usuarioCreado);
         }
     }
@@ -66,7 +69,8 @@
         if (!result.Canceled)
         {
             // Aquí puedes actualizar el usuario modificado.
-            User usuarioEditado = result.Data as User;
+            UserDTO usuarioDtoCreado = result.Data as UserDTO;
+            User usuarioEditado = new User(usuarioDtoCreado);
             // Por ejemplo, podrías actualizar la lista:
             int index = users.IndexOf(usuario);
             if (index != -1)

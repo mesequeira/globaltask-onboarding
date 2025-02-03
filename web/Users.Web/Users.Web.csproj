@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+      <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
       <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
       <PackageReference Include="MudBlazor" Version="7.16.0" />
       <PackageReference Include="MudBlazor.ThemeManager" Version="2.1.0" />

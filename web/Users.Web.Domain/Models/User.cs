@@ -1,4 +1,6 @@
-﻿namespace Users.Web.Domain.Models;
+﻿using Users.Web.Domain.DTO;
+
+namespace Users.Web.Domain.Models;
 
 public class User : BaseModel
 {
@@ -22,6 +24,14 @@ public class User : BaseModel
         Email = email;
         PhoneNumber = phoneNumber;
         BirthDate = birthDate;
+    }
+    
+    public User(UserDTO userDto)
+    {
+        Name = userDto.Name!;
+        Email = userDto.Email!;
+        PhoneNumber = userDto.PhoneNumber!;
+        BirthDate = (DateTime)userDto.BirthDate!;
     }
     
     public User(){}

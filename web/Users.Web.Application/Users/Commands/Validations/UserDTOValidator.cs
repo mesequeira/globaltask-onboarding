@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
+using Users.Web.Domain.DTO;
 using Users.Web.Domain.Models;
 
-namespace Users.Application.Users.Commands.CreateUser;
+namespace Users.Web.Application.Users.Commands.Validations;
 
-public class UserValidator : AbstractValidator<User>
+public class UserDTOValidator : AbstractValidator<UserDTO>
 {
-    public UserValidator()
+    public UserDTOValidator()
     {
         RuleFor(command => command.Name)
             .NotEmpty().WithMessage("Name is required.")
@@ -28,15 +29,19 @@ public class UserValidator : AbstractValidator<User>
             .Must(BeAtLeast18YearsOld).WithMessage("Debes tener al menos 18 años.");
     }
 
-    private bool BeAtLeast18YearsOld(DateTime birthDate)
+    private bool BeAtLeast18YearsOld(DateTime? birthDate)
     {
+        if (!birthDate.HasValue) return false;
+        
+        DateTime birthDateValue = birthDate.Value;
         var today = DateTime.Today;
-        var age = today.Year - birthDate.Year;
+        var age = today.Year - birthDateValue.Year;
 
         // Resta un año si aún no ha cumplido años este año.
-        if (birthDate.Date > today.AddYears(-age)) 
+        if (birthDateValue.Date > today.AddYears(-age))
             age--;
 
         return age >= 18;
+
     }
 }

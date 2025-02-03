@@ -1,7 +1,10 @@
 using Users.Web.App;
-using FluentValidation.AspNetCore;
+using Blazored.FluentValidation;
+using FluentValidation;
 using MudBlazor.Services;
-using Users.Application.Users.Commands.CreateUser;
+using Users.Web.Application.Users.Commands.Validations;
+using Users.Web.Domain.DTO;
+using Users.Web.Domain.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +15,9 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
-builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UserValidator>());
+// builder.Services.AddBlazoredFluentValidation();
 
+builder.Services.AddTransient<IValidator<UserDTO>, UserDTOValidator>();
 
 
 var app = builder.Build();

@@ -1,55 +1,72 @@
-﻿@using Users.Web.Domain.Models
+﻿@using System.Reflection
+@using Users.Web.Domain.DTO
+@using Users.Web.Domain.Models
 @inject IDialogService DialogService
 
-<MudDialog>
-    <DialogContent>
-        <MudTextField @bind-Value="editUser.Name" Label="Nombre" Required="true" />
-        <MudTextField @bind-Value="editUser.Email" Label="Email" Required="true" />
-        <MudTextField @bind-Value="editUser.PhoneNumber" Label="Teléfono" Required="true" />
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="GuardarAsync">Guardar</MudButton>
-        <MudButton OnClick="Cancelar">Cancelar</MudButton>
-    </DialogActions>
-</MudDialog>
+<EditForm Model="@editUser" OnValidSubmit="GuardarAsync">
+    <FluentValidationValidator />
+    <MudDialog>
+        <DialogContent>
+            <MudTextField @bind-Value="editUser.Name" Label="Nombre"  />
+
+            <ValidationMessage For="@(() => editUser.Name)" class="danger" />
+
+            <MudTextField @bind-Value="editUser.Email" Label="Email"  />
+            <ValidationMessage For="@(() => editUser.Email)" class="danger" />
+
+            <MudTextField @bind-Value="editUser.PhoneNumber" Label="Teléfono"  />
+            <ValidationMessage For="@(() => editUser.PhoneNumber)" class="text-danger" />
+
+            <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" />
+            <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" />
+            
+        </DialogContent>
+        <DialogActions>
+            <!-- El botón Guardar se activa cuando el formulario es válido -->
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Guardar</MudButton>
+            <MudButton OnClick="Cancelar">Cancelar</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
 
 @code {
-    [Parameter] 
+    [Parameter]
     public User User { get; set; }
-    
-    [Parameter] 
+
+    [Parameter]
     public bool OnEdit { get; set; }
 
-    [CascadingParameter] 
+    [CascadingParameter]
     public MudDialogInstance MudDialog { get; set; }
 
-    private User editUser;
+    private UserDTO editUser;
+
+    private DateTime? modalDate;
 
     protected override void OnInitialized()
     {
         if (OnEdit)
         {
-            // Se crea una copia del usuario para editar sin modificar el original hasta confirmar.
-            editUser = new User(User.Name, User.Email, User.PhoneNumber, User.BirthDate);
+            // Se crea una copia para evitar modificar el original hasta confirmar.
+            editUser = new UserDTO(User.Name, User.Email, User.PhoneNumber, User.BirthDate);
         }
         else
         {
-            editUser = new User();
+            editUser = new UserDTO();
         }
     }
 
     async Task GuardarAsync()
     {
-        // Parámetros para el child modal; en este caso se envía el flag OnEdit para mostrar el mensaje adecuado.
-        var parameters = new DialogParameters { { "OnEdit", OnEdit } };
 
-        // Se muestra el modal de confirmación (UserConfirmModal).
+        // Se asigna la fecha seleccionada al modelo.
+        var parameters = new DialogParameters { { "OnEdit", OnEdit } };
         var childDialog = DialogService.Show<UserConfirmModal>("Confirmación", parameters);
         var result = await childDialog.Result;
 
-        // Si se confirma la acción en el modal hijo, se cierra el parent modal retornando el usuario editado.
-        if (!result.Canceled && result.Data is bool confirmed && confirmed)
+        if (!result.Canceled)
         {
+            // Se cierra el modal retornando el usuario editado o creado.
             MudDialog.Close(DialogResult.Ok(editUser));
         }
     }
