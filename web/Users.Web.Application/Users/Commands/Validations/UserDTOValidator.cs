@@ -29,16 +29,14 @@ public class UserDTOValidator : AbstractValidator<UserDTO>
             .Must(BeAtLeast18YearsOld).WithMessage("Debes tener al menos 18 años.");
     }
 
-    private bool BeAtLeast18YearsOld(DateTime? birthDate)
+    private bool BeAtLeast18YearsOld(DateTime dateTime)
     {
-        if (!birthDate.HasValue) return false;
         
-        DateTime birthDateValue = birthDate.Value;
         var today = DateTime.Today;
-        var age = today.Year - birthDateValue.Year;
+        var age = today.Year - dateTime.Year;
 
         // Resta un año si aún no ha cumplido años este año.
-        if (birthDateValue.Date > today.AddYears(-age))
+        if (dateTime.Date > today.AddYears(-age))
             age--;
 
         return age >= 18;

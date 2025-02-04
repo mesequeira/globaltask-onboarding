@@ -3,7 +3,11 @@
 @using Users.Web.App.Components
 @using Users.Web.Domain.DTO
 
+@inject Users.Web.Domain.Services.IUserService UserService
+
+
 @inject IDialogService DialogService
+
 
 <MudText>Usuarios</MudText>
 
@@ -36,11 +40,15 @@
 
 @code {
     static User test = new User("Carlos", "carlos@gmail.com", "5492214810071", DateTime.Now);
-    List<User> users;
+    List<UserDTO>? users;
 
-    protected override void OnInitialized()
+    // protected override void OnInitialized()
+    // {
+    //     users = new() { test };
+    // }
+    protected override async Task OnInitializedAsync()
     {
-        users = new() { test };
+        users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
     }
 
     async Task CrearUsuario()
@@ -54,12 +62,12 @@
         {
             // Aquí puedes actualizar el usuario modificado.
             UserDTO usuarioDtoCreado = result.Data as UserDTO;
-            User usuarioCreado = new User(usuarioDtoCreado);
-            users.Add(usuarioCreado);
+            // User usuarioCreado = new User(usuarioDtoCreado);
+            users.Add(usuarioDtoCreado);
         }
     }
 
-    async Task EditarUsuario(User usuario)
+    async Task EditarUsuario(UserDTO usuario)
     {
         var parameters = new DialogParameters { ["User"] = usuario, ["OnEdit"] = true };
         var options = new DialogOptions { CloseOnEscapeKey = true };
@@ -70,17 +78,17 @@
         {
             // Aquí puedes actualizar el usuario modificado.
             UserDTO usuarioDtoCreado = result.Data as UserDTO;
-            User usuarioEditado = new User(usuarioDtoCreado);
+            // User usuarioEditado = new User(usuarioDtoCreado);
             // Por ejemplo, podrías actualizar la lista:
             int index = users.IndexOf(usuario);
             if (index != -1)
             {
-                users[index] = usuarioEditado;
+                users[index] = usuarioDtoCreado;
             }
         }
     }
 
-    async Task EliminarUsuario(User usuario)
+    async Task EliminarUsuario(UserDTO usuario)
     {
         var parameters = new DialogParameters { ["User"] = usuario };
         var options = new DialogOptions { CloseOnEscapeKey = true };

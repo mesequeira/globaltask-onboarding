@@ -5,6 +5,8 @@ using MudBlazor.Services;
 using Users.Web.Application.Users.Commands.Validations;
 using Users.Web.Domain.DTO;
 using Users.Web.Domain.Models;
+using Users.Web.Domain.Services;
+using Users.Web.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,12 @@ builder.Services.AddMudServices();
 
 builder.Services.AddTransient<IValidator<UserDTO>, UserDTOValidator>();
 
+builder.Services.AddHttpClient<IUserService, UserService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:8080/");
+});
+
+
 
 var app = builder.Build();
 
@@ -29,8 +37,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();

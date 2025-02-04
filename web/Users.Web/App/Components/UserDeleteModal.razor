@@ -1,6 +1,7 @@
 ﻿@using MudBlazor
 @using Users.Web.Domain.Models
 @using Microsoft.AspNetCore.Components
+@using Users.Web.Domain.DTO
 
 <MudDialog>
     <DialogContent>
@@ -16,7 +17,7 @@
 
 @code {
     [Parameter]
-    public User User { get; set; }
+    public UserDTO User { get; set; }
 
     [CascadingParameter]
     public MudDialogInstance MudDialog { get; set; }

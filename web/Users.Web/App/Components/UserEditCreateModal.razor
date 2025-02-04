@@ -17,8 +17,8 @@
             <MudTextField @bind-Value="editUser.PhoneNumber" Label="Teléfono"  />
             <ValidationMessage For="@(() => editUser.PhoneNumber)" class="text-danger" />
 
-            <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" />
-            <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" />
+            @* <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" /> *@
+            @* <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" /> *@
             
         </DialogContent>
         <DialogActions>
@@ -31,7 +31,7 @@
 
 @code {
     [Parameter]
-    public User User { get; set; }
+    public UserDTO User { get; set; }
 
     [Parameter]
     public bool OnEdit { get; set; }
@@ -48,11 +48,12 @@
         if (OnEdit)
         {
             // Se crea una copia para evitar modificar el original hasta confirmar.
-            editUser = new UserDTO(User.Name, User.Email, User.PhoneNumber, User.BirthDate);
+            editUser = User;
         }
         else
         {
             editUser = new UserDTO();
+            editUser.BirthDate = new DateTime(1980, 12, 12);
         }
     }
 
