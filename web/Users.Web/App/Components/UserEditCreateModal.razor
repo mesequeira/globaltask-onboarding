@@ -1,6 +1,9 @@
 ﻿@using System.Reflection
 @using Users.Web.Domain.DTO
 @using Users.Web.Domain.Models
+@using Users.Web.Infrastructure.Services
+
+@inject Domain.Services.IUserService UserService
 @inject IDialogService DialogService
 
 <EditForm Model="@editUser" OnValidSubmit="GuardarAsync">
@@ -19,7 +22,7 @@
 
             @* <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" /> *@
             @* <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" /> *@
-            
+
         </DialogContent>
         <DialogActions>
             <!-- El botón Guardar se activa cuando el formulario es válido -->
@@ -67,6 +70,17 @@
 
         if (!result.Canceled)
         {
+            bool success;
+            if (OnEdit)
+            {
+                success = await UserService.UpdateUserAsync(editUser.Id, editUser);
+            }
+            else
+            {
+                int? userId = await UserService.PostUsersAsync(editUser);
+                success = userId.HasValue;
+            }
+
             // Se cierra el modal retornando el usuario editado o creado.
             MudDialog.Close(DialogResult.Ok(editUser));
         }

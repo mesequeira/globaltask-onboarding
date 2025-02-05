@@ -6,5 +6,8 @@ namespace Users.Web.Domain.Services
     public interface IUserService
     {
         Task<List<UserDTO>?> GetUsersAsync(int page = 1, int size = 25, string sortBy = "name");
+        Task<int?> PostUsersAsync(UserDTO editUser);
+        Task<bool> UpdateUserAsync(int id, UserDTO updatedUser);
+        Task<bool> DeleteUserAsync(int id);
     }
 }

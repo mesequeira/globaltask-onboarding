@@ -28,4 +28,55 @@ public class UserService : IUserService
         return response?.IsSuccess == true ? response.Value.Users : null;
         
     }
+    
+    public async Task<int?> PostUsersAsync(UserDTO newUser)
+    {
+        string url = "api/users";
+
+        // Make the POST request
+        var response = await _httpClient.PostAsJsonAsync(url, newUser);
+
+        // Ensure a successful response
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        // Deserialize the response
+        var result = await response.Content.ReadFromJsonAsync<ApiGenericResponse<int>>();
+
+        // Return the user ID if the request was successful
+        return result?.IsSuccess == true ? result.Value : null;
+    }
+    
+    public async Task<bool> UpdateUserAsync(int id, UserDTO updatedUser)
+    {
+        string url = $"api/users/{id}";
+
+        var response = await _httpClient.PatchAsJsonAsync(url, updatedUser);
+
+        // Verificar si la respuesta fue exitosa
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+        else return true;
+
+        // // Deserializar la respuesta
+        // var result = await response.Content.ReadFromJsonAsync<ApiGenericResponse<int>>();
+        //
+        // // Retornar true si la actualización fue exitosa
+        // return result?.IsSuccess == true;
+    }
+    
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        string url = $"api/users/{id}";
+
+        var response = await _httpClient.DeleteAsync(url);
+
+        // Retorna true si la respuesta es exitosa (204 No Content)
+        return response.IsSuccessStatusCode;
+    }
+
 }
