@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
 using Users.Web.Domain.DTO;
-using Users.Web.Domain.Models;
 
-namespace Users.Web.Application.Users.Commands.Validations;
+namespace Users.Web.Application.Users.Validations;
 
 public class UserDTOValidator : AbstractValidator<UserDTO>
 {
@@ -23,15 +22,15 @@ public class UserDTOValidator : AbstractValidator<UserDTO>
             .MaximumLength(13).WithMessage("El teléfono tiene más del máximo de caracteres (13).")
             .Matches(@"^\d+$").WithMessage("El teléfono debe contener solo números.");
 
-        
+
         RuleFor(command => command.BirthDate)
-            .NotEmpty().WithMessage("La fecha de nacimiento es obligatoria.")
-            .Must(BeAtLeast18YearsOld).WithMessage("Debes tener al menos 18 años.");
+            .NotEmpty().WithMessage("La fecha de nacimiento es obligatoria.");
+        // .Must(BeAtLeast18YearsOld).WithMessage("Debes tener al menos 18 años.");
     }
 
-    private bool BeAtLeast18YearsOld(DateTime dateTime)
+    private bool BeAtLeast18YearsOld(DateTime? dateTimeNullable)
     {
-        
+        DateTime dateTime = (DateTime) dateTimeNullable;
         var today = DateTime.Today;
         var age = today.Year - dateTime.Year;
 

@@ -1,94 +1,53 @@
 ﻿@page "/users"
-@using global::Users.Web.Domain.Models
 @using Users.Web.App.Components
-@using Users.Web.Domain.DTO
+@using Users.Web.App.Components.Spinner
 
 @inject Domain.Services.IUserService UserService
 @inject IDialogService DialogService
 
-
-<MudText Typo="Typo.h3" style="max-width: 1500px;" Class="mb-3">Usuarios</MudText>
-
-<div class="d-flex justify-content-end mb-3">
-    <MudButton OnClick="@CrearUsuario" Color="Color.Primary" Variant="Variant.Filled" Class="px-4 py-2 fw-bold">
-        Crear Usuario
-    </MudButton>
-</div>
-
-<div class="mx-auto" style="max-width: 1500px;">
-    <MudTable Items="@users" Dense="true" Class="table-responsive">
-        <HeaderContent>
-            <MudTh>Id</MudTh>
-            <MudTh>Nombre</MudTh>
-            <MudTh>Email</MudTh>
-            <MudTh>Teléfono</MudTh>
-            @* <MudTh>Birth Date</MudTh> *@
-            <MudTh>Acciones</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.Id</MudTd>
-            <MudTd>@context.Name</MudTd>
-            <MudTd>@context.Email</MudTd>
-            <MudTd>@context.PhoneNumber</MudTd>
-            @* <MudTd>@context.BirthDate</MudTd> *@
-            <MudTd>
-                <div class="d-flex justify-content-end">
-                    <UserActionsButton
-                        OnEditarUsuario="@(() => EditarUsuario(@context))"
-                        OnEliminarUsuario="@(() => EliminarUsuario(@context))" />
-                </div>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
-</div>
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 
+@* @inject IState<Users.Web.Application.Users.UserState> UserState *@
+@* @inherits Fluxor.Blazor.Web.Components.FluxorComponent *@
 
-@code {
-    List<UserDTO>? users;
+@if (UserState.Value.IsLoading)
+{
+    <Spinner />
+}
+else{
+    <MudText Typo="Typo.h3" style="max-width: 1500px;" Class="mb-3">Usuarios</MudText>
 
-    protected override async Task OnInitializedAsync()
-    {
-        users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
-    }
+    <div class="d-flex justify-content-end mb-3">
+        <MudButton OnClick="@CrearUsuario" Color="Color.Primary" Variant="Variant.Filled" Class="px-4 py-2 fw-bold">
+            Crear Usuario
+        </MudButton>
+    </div>
 
-    async Task CrearUsuario()
-    {
-        var parameters = new DialogParameters { ["User"] = null, ["OnEdit"] = false };
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<UserEditCreateModal>("Editar Usuario", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
-        }
-    }
-
-    async Task EditarUsuario(UserDTO usuario)
-    {
-        var parameters = new DialogParameters { ["User"] = usuario, ["OnEdit"] = true };
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<UserEditCreateModal>("Editar Usuario", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
-        }
-    }
-
-    async Task EliminarUsuario(UserDTO user)
-    {
-        var parameters = new DialogParameters { ["User"] = user };
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<UserDeleteModal>("Eliminar Usuario", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            await UserService.DeleteUserAsync(user.Id);
-            users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
-        }
-    }
+    <div class="mx-auto" style="max-width: 1500px;">
+        <MudTable Items="@users" Dense="true" Class="table-responsive">
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Nombre</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Teléfono</MudTh>
+                <MudTh>Birth Date</MudTh>
+                <MudTh>Acciones</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Id</MudTd>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>@context.PhoneNumber</MudTd>
+                <MudTd>@context.BirthDate</MudTd>
+                <MudTd>
+                    <div class="d-flex justify-content-end">
+                        <UserActionsButton
+                            OnEditarUsuario="@(() => EditarUsuario(@context))"
+                            OnEliminarUsuario="@(() => EliminarUsuario(@context))" />
+                    </div>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
 }

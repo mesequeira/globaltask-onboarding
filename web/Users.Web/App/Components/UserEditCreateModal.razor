@@ -6,6 +6,7 @@
 @inject Domain.Services.IUserService UserService
 @inject IDialogService DialogService
 
+
 <EditForm Model="@editUser" OnValidSubmit="GuardarAsync">
     <FluentValidationValidator />
     <MudDialog>
@@ -20,8 +21,8 @@
             <MudTextField @bind-Value="editUser.PhoneNumber" Label="Teléfono"  />
             <ValidationMessage For="@(() => editUser.PhoneNumber)" class="text-danger" />
 
-            @* <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" /> *@
-            @* <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" /> *@
+            <MudDatePicker @bind-Date="editUser.BirthDate" Label="Fecha de Nacimiento" />
+            <ValidationMessage For="@(() => editUser.BirthDate)" class="text-danger" />
 
         </DialogContent>
         <DialogActions>
@@ -50,7 +51,6 @@
     {
         if (OnEdit)
         {
-            // Se crea una copia para evitar modificar el original hasta confirmar.
             editUser = User;
         }
         else

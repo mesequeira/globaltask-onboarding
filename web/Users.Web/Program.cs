@@ -1,19 +1,38 @@
+// using System.Reflection;
+
+using System.Reflection;
 using Users.Web.App;
-using Blazored.FluentValidation;
 using FluentValidation;
+using Fluxor;
+using Fluxor.Blazor.Web.ReduxDevTools;
 using MudBlazor.Services;
-using Users.Web.Application.Users.Commands.Validations;
+using Users.Web.Application.Users.Validations;
 using Users.Web.Domain.DTO;
-using Users.Web.Domain.Models;
 using Users.Web.Domain.Services;
 using Users.Web.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+Assembly applicationAssembly = typeof(UserDTOValidator).Assembly;
+
+// Registrar Fluxor y escanear el ensamblado correcto donde están los reducers y effects
+builder.Services.AddFluxor(options => options.ScanAssemblies(applicationAssembly).UseReduxDevTools());
+
+// Registrar UserService (si aún no está registrado)
+builder.Services.AddScoped<IUserService, UserService>();
+
 // Add services to the container.
+// builder.Services.AddFluxor(options =>
+// {
+//     options.ScanAssemblies(typeof(UserState).Assembly);
+// });
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+
 
 builder.Services.AddMudServices();
 
