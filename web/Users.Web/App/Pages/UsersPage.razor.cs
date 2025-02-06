@@ -23,7 +23,6 @@ public partial class UsersPage
         // Dispatcher.Dispatch(action);
         Dispatcher.Dispatch(new FetchDataAction());
 
-        // Dispatcher.Dispatch(new Users.Web.Application.Users.LoadUsersAction());
         users = UserState.Value.Users;
         // users = await UserService.GetUsersAsync(page: 1, size: 25, sortBy: "name");
     }
