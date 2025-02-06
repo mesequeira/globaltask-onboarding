@@ -4,3 +4,17 @@ services:
     build:
       context: .
       dockerfile: Users.Web/Dockerfile
+    environment:
+      - WEB_API_BASE_ADDRESS=${WEB_API_BASE_ADDRESS}
+      - ASPNETCORE_ENVIRONMENT= "Development"
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8090:8080"
+    networks:
+      - external_network
+
+
+networks:
+  external_network:
+    name: my_external_network  # Nombre real de la red
+    external: true

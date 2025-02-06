@@ -14,7 +14,6 @@ using Users.Web.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 Assembly applicationAssembly = typeof(UserDTOValidator).Assembly;
 
 // Registrar Fluxor y escanear el ensamblado correcto donde están los reducers y effects
@@ -42,7 +41,8 @@ builder.Services.AddTransient<IValidator<UserDTO>, UserDTOValidator>();
 
 builder.Services.AddHttpClient<IUserService, UserService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:8080/");
+    var baseAddress = builder.Configuration["WEB_API_BASE_ADDRESS"] ?? "http://localhost:8080/";
+    client.BaseAddress = new Uri(baseAddress);
 });
 
 
